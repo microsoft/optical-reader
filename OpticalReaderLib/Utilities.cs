@@ -6,7 +6,19 @@ namespace OpticalReaderLib
 {
     static class Utilities
     {
-        public static double CalculateZoom(Windows.Foundation.Size sensorSize, double sensorRotation, double focalLength35, Windows.Foundation.Size resolution, Windows.Foundation.Size objectSize, double distance)
+        /// <summary>
+        /// Calculates optimal digital zoom from the given parameters.
+        /// </summary>
+        /// <param name="sensorSize">Size of the camera sensor in millimeters</param>
+        /// <param name="sensorRotation">Camera sensor orientation to the screen</param>
+        /// <param name="focalLength35">35 millimeter equivalent focal length of the camera lense</param>
+        /// <param name="resolution">Camera sensor resolution in pixels</param>
+        /// <param name="objectSize">Real-life object size in millimeters</param>
+        /// <param name="distance">Camera sensor distance to the object in millimeters</param>
+        /// <param name="objectResolution">Preferred object size on sensor in pixels</param>
+        /// <returns>Digital zoom that makes the object in question appear so that it fits in objectResolution pixels on the sensor</returns>
+        public static double CalculateZoom(Windows.Foundation.Size sensorSize, double sensorRotation, double focalLength35,
+            Windows.Foundation.Size resolution, Windows.Foundation.Size objectSize, double distance, Windows.Foundation.Size objectResolution)
         {
             var sensorDiagonal = Math.Sqrt(Math.Pow(sensorSize.Width, 2) + Math.Pow(sensorSize.Height, 2));
 
@@ -16,11 +28,11 @@ namespace OpticalReaderLib
 
             // http://photo.stackexchange.com/questions/12434/how-do-i-calculate-the-distance-of-an-object-in-a-photo
             // ObjectHeightOnSensorPx = (FocalLengthMm * ObjectRealHeightMm * ImageHeightPx) / (SensorHeightMm * ObjectDistanceMm)
-            var objectHeightPixels = (focalLength * objectSize.Height * resolution.Width) / (sensorSize.Height * distance);
+            var objectWidthPixels = (focalLength * objectSize.Width * resolution.Width) / (sensorSize.Width * distance);
 
-            //return Math.Max(resolution.Height / objectHeightPixels, 1);
+            var side = sensorRotation % 180 == 0 ? objectResolution.Height : objectResolution.Width;
 
-            return resolution.Height / objectHeightPixels;
+            return side / objectWidthPixels;
         }
 
         public static ColorMode FrameFormatToColorMode(FrameFormat format)

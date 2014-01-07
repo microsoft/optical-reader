@@ -21,10 +21,6 @@ namespace OpticalReaderApp
         /// <returns>The root frame of the Phone Application.</returns>
         public static PhoneApplicationFrame RootFrame { get; private set; }
 
-        public static PhotoCaptureDevice Camera { get; set; }
-
-        public static Semaphore CameraSemaphore = new Semaphore(1, 1);
-
         /// <summary>
         /// Constructor for the Application object.
         /// </summary>
@@ -68,28 +64,24 @@ namespace OpticalReaderApp
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
-            InitializeCamera();
         }
 
         // Code to execute when the application is activated (brought to foreground)
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
-            InitializeCamera();
         }
 
         // Code to execute when the application is deactivated (sent to background)
         // This code will not execute when the application is closing
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
-            UninitializeCamera();
         }
 
         // Code to execute when the application is closing (eg, user hit Back)
         // This code will not execute when the application is deactivated
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
-            UninitializeCamera();
         }
 
         // Code to execute if a navigation fails
@@ -109,39 +101,6 @@ namespace OpticalReaderApp
             {
                 // An unhandled exception has occurred; break into the debugger
                 Debugger.Break();
-            }
-        }
-
-        private void InitializeCamera()
-        {
-            var captureResolutions = PhotoCaptureDevice.GetAvailableCaptureResolutions(CameraSensorLocation.Back).ToArray();
-            var previewResolutions = PhotoCaptureDevice.GetAvailablePreviewResolutions(CameraSensorLocation.Back).ToArray();
-            var task = PhotoCaptureDevice.OpenAsync(CameraSensorLocation.Back, captureResolutions[1]).AsTask();
-
-            task.Wait();
-
-            var previewResolution = previewResolutions[1];
-
-            Camera = task.Result;
-            //Camera.SetPreviewResolutionAsync(previewResolution).AsTask().Wait();
-
-            var centerPoint = new Windows.Foundation.Point(previewResolution.Width / 2, previewResolution.Height / 2);
-            var focusRegionSize = new Windows.Foundation.Size(100, 100);
-
-            Camera.FocusRegion = new Windows.Foundation.Rect(
-                centerPoint.X - focusRegionSize.Width / 2, centerPoint.Y - focusRegionSize.Height / 2,
-                focusRegionSize.Width, focusRegionSize.Height);
-
-            //Camera.SetProperty(KnownCameraGeneralProperties.AutoFocusRange, AutoFocusRange.Macro);
-            //Camera.SetProperty(KnownCameraAudioVideoProperties.VideoTorchMode, VideoTorchMode.On);
-        }
-
-        private void UninitializeCamera()
-        {
-            if (Camera != null)
-            {
-                Camera.Dispose();
-                Camera = null;
             }
         }
 

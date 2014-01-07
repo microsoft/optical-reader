@@ -8,7 +8,15 @@ namespace OpticalReaderLib
 {
     public class Information
     {
-        public static ParameterSuggestion GetSuggestedParameters(Windows.Foundation.Size resolution, double sensorRotation, Windows.Foundation.Size objectSize)
+        /// <summary>
+        /// Gets suggested camera parameters from the given information.
+        /// </summary>
+        /// <param name="sensorResolution">Camera sensor resolution in pixels</param>
+        /// <param name="sensorRotation">Camera sensor orientation to the screen</param>
+        /// <param name="objectSize">Real-life object size in millimeters</param>
+        /// <param name="length">Preferred object width or height in pixels</param>
+        /// <returns>Suggested camera parameters</returns>
+        public static ParameterSuggestion GetSuggestedParameters(Windows.Foundation.Size sensorResolution, double sensorRotation, Windows.Foundation.Size objectSize, Windows.Foundation.Size objectResolution)
         {
             var deviceInformation = DeviceInformationCollector.GetInformation();
 
@@ -19,7 +27,7 @@ namespace OpticalReaderLib
                 return new ParameterSuggestion()
                 {
                     IsAccurate = true,
-                    Zoom = Utilities.CalculateZoom(deviceInformation.SensorSize, sensorRotation, deviceInformation.FocalLength35Equivalent, resolution, objectSize, deviceInformation.MinimumFocusDistance),
+                    Zoom = Utilities.CalculateZoom(deviceInformation.SensorSize, sensorRotation, deviceInformation.FocalLength35Equivalent, sensorResolution, objectSize, deviceInformation.MinimumFocusDistance, objectResolution),
                     Distance = deviceInformation.MinimumFocusDistance
                 };
             }
@@ -30,7 +38,7 @@ namespace OpticalReaderLib
                 return new ParameterSuggestion()
                 {
                     IsAccurate = false,
-                    Zoom = Utilities.CalculateZoom(new Windows.Foundation.Size(3.2, 2.4), sensorRotation, 26, resolution, objectSize, 100),
+                    Zoom = Utilities.CalculateZoom(new Windows.Foundation.Size(3.2, 2.4), sensorRotation, 26, sensorResolution, objectSize, 100, objectResolution),
                     Distance = 100
                 };
             }
