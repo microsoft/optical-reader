@@ -92,7 +92,7 @@ namespace OpticalReaderApp
                 centerPoint.X - focusRegionSize.Width / 2, centerPoint.Y - focusRegionSize.Height / 2,
                 focusRegionSize.Width, focusRegionSize.Height);
 
-            var parameters = OpticalReaderLib.Information.GetSuggestedParameters(_device.PreviewResolution, _device.SensorRotationInDegrees, objectSize, objectResolution);
+            var parameters = OpticalReaderLib.Utilities.GetSuggestedParameters(_device.PreviewResolution, _device.SensorRotationInDegrees, objectSize, objectResolution);
 
             _zoom = parameters.Zoom;
 

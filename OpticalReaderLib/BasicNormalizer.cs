@@ -10,7 +10,7 @@ namespace OpticalReaderLib
     {
         public async Task<NormalizeResult> NormalizeAsync(Frame frame, double rotation, double zoom)
         {
-            using (var bitmap = new Bitmap(frame.Dimensions, Utilities.FrameFormatToColorMode(frame.Format), frame.Pitch, frame.Buffer.AsBuffer()))
+            using (var bitmap = new Bitmap(frame.Dimensions, Internal.Utilities.FrameFormatToColorMode(frame.Format), frame.Pitch, frame.Buffer.AsBuffer()))
             using (var source = new BitmapImageSource(bitmap))
             using (var effect = new FilterEffect(source))
             using (var renderer = new BitmapRenderer(effect))
@@ -29,7 +29,7 @@ namespace OpticalReaderLib
                     new ReframingFilter(area, -rotation)
                 };
 
-                using (var newBitmap = new Bitmap(new Windows.Foundation.Size(area.Width, area.Height), Utilities.FrameFormatToColorMode(frame.Format)))
+                using (var newBitmap = new Bitmap(new Windows.Foundation.Size(area.Width, area.Height), Internal.Utilities.FrameFormatToColorMode(frame.Format)))
                 {
                     await effect.GetBitmapAsync(newBitmap, OutputOption.PreserveAspectRatio);
 

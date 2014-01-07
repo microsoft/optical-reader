@@ -1,6 +1,6 @@
 ﻿using Microsoft.Phone.Info;
 
-namespace OpticalReaderLib
+namespace OpticalReaderLib.Internal
 {
     class DeviceInformationCollector
     {

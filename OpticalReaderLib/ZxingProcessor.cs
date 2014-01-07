@@ -2,10 +2,12 @@
 
 namespace OpticalReaderLib
 {
-    public class ZxingProcessor : ProcessorBase
+    public class ZxingProcessor : BasicProcessor
     {
-        public ZxingProcessor() : base(new BasicNormalizer(), new BasicEnhancer(), new ZxingDecoder())
+        public ZxingProcessor() : base(new ZxingDecoder())
         {
+            Normalizer = new BasicNormalizer();
+            Enhancer = new BasicEnhancer();
         }
     }
 }

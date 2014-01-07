@@ -1,85 +1,43 @@
-﻿using Nokia.Graphics.Imaging;
-using System;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace OpticalReaderLib
 {
-    static class Utilities
+    public class Utilities
     {
         /// <summary>
-        /// Calculates optimal digital zoom from the given parameters.
+        /// Gets suggested camera parameters from the given information.
         /// </summary>
-        /// <param name="sensorSize">Size of the camera sensor in millimeters</param>
+        /// <param name="sensorResolution">Camera sensor resolution in pixels</param>
         /// <param name="sensorRotation">Camera sensor orientation to the screen</param>
-        /// <param name="focalLength35">35 millimeter equivalent focal length of the camera lense</param>
-        /// <param name="resolution">Camera sensor resolution in pixels</param>
         /// <param name="objectSize">Real-life object size in millimeters</param>
-        /// <param name="distance">Camera sensor distance to the object in millimeters</param>
-        /// <param name="objectResolution">Preferred object size on sensor in pixels</param>
-        /// <returns>Digital zoom that makes the object in question appear so that it fits in objectResolution pixels on the sensor</returns>
-        public static double CalculateZoom(Windows.Foundation.Size sensorSize, double sensorRotation, double focalLength35,
-            Windows.Foundation.Size resolution, Windows.Foundation.Size objectSize, double distance, Windows.Foundation.Size objectResolution)
+        /// <param name="length">Preferred object width or height in pixels</param>
+        /// <returns>Suggested camera parameters</returns>
+        public static ParameterSuggestion GetSuggestedParameters(Windows.Foundation.Size sensorResolution, double sensorRotation, Windows.Foundation.Size objectSize, Windows.Foundation.Size objectResolution)
         {
-            var sensorDiagonal = Math.Sqrt(Math.Pow(sensorSize.Width, 2) + Math.Pow(sensorSize.Height, 2));
+            var deviceInformation = Internal.DeviceInformationCollector.GetInformation();
 
-            // http://en.wikipedia.org/wiki/35_mm_equivalent_focal_length
-            // FocalLengthMm = DiagonalMm * FocalLength35Mm / 43.27
-            var focalLength = sensorDiagonal * focalLength35 / 43.27;
-
-            // http://photo.stackexchange.com/questions/12434/how-do-i-calculate-the-distance-of-an-object-in-a-photo
-            // ObjectHeightOnSensorPx = (FocalLengthMm * ObjectRealHeightMm * ImageHeightPx) / (SensorHeightMm * ObjectDistanceMm)
-            var objectWidthPixels = (focalLength * objectSize.Width * resolution.Width) / (sensorSize.Width * distance);
-
-            var side = sensorRotation % 180 == 0 ? objectResolution.Height : objectResolution.Width;
-
-            return side / objectWidthPixels;
-        }
-
-        public static ColorMode FrameFormatToColorMode(FrameFormat format)
-        {
-            if (format == FrameFormat.Bgra32)
+            if (deviceInformation != null)
             {
-                return ColorMode.Bgra8888;
+                System.Diagnostics.Debug.WriteLine(String.Format("Detected {0}, returning device specific parameters", deviceInformation.Name));
+
+                return new ParameterSuggestion()
+                {
+                    IsAccurate = true,
+                    Zoom = Internal.Utilities.CalculateZoom(deviceInformation.SensorSize, sensorRotation, deviceInformation.FocalLength35Equivalent, sensorResolution, objectSize, deviceInformation.MinimumFocusDistance, objectResolution),
+                    Distance = deviceInformation.MinimumFocusDistance
+                };
             }
-            else if (format == FrameFormat.Gray8)
+            else
             {
-                return ColorMode.Gray8;
+                System.Diagnostics.Debug.WriteLine("Unknown device, returning default parameters");
+
+                return new ParameterSuggestion()
+                {
+                    IsAccurate = false,
+                    Zoom = Internal.Utilities.CalculateZoom(new Windows.Foundation.Size(3.2, 2.4), sensorRotation, 26, sensorResolution, objectSize, 100, objectResolution),
+                    Distance = 100
+                };
             }
-
-            throw new ArgumentException();
-        }
-    }
-
-    class TimedExecution
-    {
-        private TimeSpan _executionTime = new TimeSpan(0);
-
-        public TimeSpan ExecutionTime
-        {
-            get
-            {
-                var t = _executionTime;
-
-                _executionTime = new TimeSpan(0);
-
-                return t;
-            }
-
-            private set
-            {
-                _executionTime = value;
-            }
-        }
-
-        public async Task<T> ExecuteAsync<T>(Windows.Foundation.IAsyncOperation<T> op)
-        {
-            var startTime = DateTime.Now;
-            var result = await op;
-            var endTime = DateTime.Now;
-
-            ExecutionTime = endTime - startTime;
-
-            return result;
         }
     }
 }

@@ -87,21 +87,21 @@
   <ItemGroup>
     <Compile Include="BasicEnhancer.cs" />
     <Compile Include="BasicNormalizer.cs" />
-    <Compile Include="DecoderResult.cs" />
-    <Compile Include="DeviceInformation.cs" />
-    <Compile Include="DeviceInformationCollector.cs" />
+    <Compile Include="Internal\DeviceInformation.cs" />
+    <Compile Include="Internal\DeviceInformationCollector.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="IDecoder.cs" />
     <Compile Include="IEnhancer.cs" />
-    <Compile Include="Information.cs" />
+    <Compile Include="Utilities.cs" />
     <Compile Include="INormalizer.cs" />
+    <Compile Include="Internal\TimedExecution.cs" />
     <Compile Include="IProcessor.cs" />
     <Compile Include="ParameterSuggestion.cs" />
-    <Compile Include="ProcessorBase.cs" />
+    <Compile Include="BasicProcessor.cs" />
     <Compile Include="ZxingDecoder.cs" />
     <Compile Include="ZxingProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities.cs" />
+    <Compile Include="Internal\Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -114,6 +114,7 @@
       <HintPath>..\packages\ZXing.Net.0.12.0.0\lib\wp8\zxing.wp8.0.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <ProjectExtensions />

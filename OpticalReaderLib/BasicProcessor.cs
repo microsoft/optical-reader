@@ -15,56 +15,46 @@ namespace OpticalReaderLib
         public List<Windows.Foundation.Point> InterestPoints = null;
     }
 
-    public abstract class ProcessorBase : IProcessor
+    public abstract class BasicProcessor : IProcessor
     {
-        private INormalizer _normalizer = null;
-        private IEnhancer _enhancer = null;
-        private IDecoder _decoder = null;
+        public INormalizer Normalizer { get; set; }
+        public IEnhancer Enhancer { get; set; }
+        public IDecoder Decoder { get; private set; }
 
-        public ProcessorBase(INormalizer normalizer, IEnhancer enhancer, IDecoder decoder)
+        public BasicProcessor(IDecoder decoder)
         {
-            _normalizer = normalizer;
-            _enhancer = enhancer;
-            _decoder = decoder;
+            Decoder = decoder;
         }
 
         public virtual async Task<ProcessResult> ProcessAsync(Frame frame, double rotation, double zoom)
         {
-            var timedExecution = new TimedExecution();
+            var timedExecution = new Internal.TimedExecution();
             var normalizeTime = new TimeSpan(0);
             var enhanceTime = new TimeSpan(0);
             var decodeTime = new TimeSpan(0);
 
             NormalizeResult normalizeResult = null;
 
-            //var result = await timedExecution.ExecuteAsync<DecodeResult>(_processor.DecodeAsync(frame).AsAsyncOperation());
-            //var decodingTime = timedExecution.ExecutionTime;
-
-            //System.Diagnostics.Debug.WriteLine(String.Format("Normalizing took {0}, enhancement took {1} ms, decoding took {2} ms, this makes total time of {3} ms",
-            //    (int)(normalizingTime).TotalMilliseconds, (int)(enhancementTime).TotalMilliseconds, (int)(decodingTime).TotalMilliseconds,
-            //    (int)(normalizingTime + enhancementTime + decodingTime).TotalMilliseconds));
-
-
-            if (_normalizer != null)
+            if (Normalizer != null)
             {
                 normalizeResult = await timedExecution.ExecuteAsync<NormalizeResult>(
-                    _normalizer.NormalizeAsync(frame, rotation, zoom).AsAsyncOperation());
+                    Normalizer.NormalizeAsync(frame, rotation, zoom).AsAsyncOperation());
 
                 normalizeTime = timedExecution.ExecutionTime;
                 frame = normalizeResult.Frame;
             }
 
-            if (_enhancer != null)
+            if (Enhancer != null)
             {
                 var enhanceResult = await timedExecution.ExecuteAsync<EnhanceResult>(
-                    _enhancer.EnhanceAsync(frame).AsAsyncOperation());
+                    Enhancer.EnhanceAsync(frame).AsAsyncOperation());
 
                 enhanceTime = timedExecution.ExecutionTime;
                 frame = enhanceResult.Frame;
             }
 
             var decodeResult = await timedExecution.ExecuteAsync<DecodeResult>(
-                _decoder.DecodeAsync(frame).AsAsyncOperation());
+                Decoder.DecodeAsync(frame).AsAsyncOperation());
 
             decodeTime = timedExecution.ExecutionTime;
 
@@ -107,7 +97,7 @@ namespace OpticalReaderLib
 
         public virtual async Task<WriteableBitmap> RenderPreviewAsync(Frame frame, Windows.Foundation.Size size)
         {
-            using (var bitmap = new Bitmap(frame.Dimensions, Utilities.FrameFormatToColorMode(frame.Format), frame.Pitch, frame.Buffer.AsBuffer()))
+            using (var bitmap = new Bitmap(frame.Dimensions, Internal.Utilities.FrameFormatToColorMode(frame.Format), frame.Pitch, frame.Buffer.AsBuffer()))
             using (var source = new BitmapImageSource(bitmap))
             using (var renderer = new WriteableBitmapRenderer(source, new WriteableBitmap((int)size.Width, (int)size.Height), OutputOption.Stretch))
             {
