@@ -111,9 +111,6 @@ namespace OpticalReaderLib
             ViewfinderVideoBrush.SetSource(_device);
 
             _device.PreviewFrameAvailable += Camera_PreviewFrameAvailable;
-
-            //Camera.SetProperty(KnownCameraGeneralProperties.AutoFocusRange, AutoFocusRange.Macro);
-            //Camera.SetProperty(KnownCameraAudioVideoProperties.VideoTorchMode, VideoTorchMode.On);
         }
 
         private void UninitializeCamera()
