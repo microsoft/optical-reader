@@ -92,6 +92,10 @@
     <Compile Include="Frame.cs" />
     <Compile Include="IDecoder.cs" />
     <Compile Include="IEnhancer.cs" />
+    <Compile Include="OpticalReaderPage.xaml.cs">
+      <DependentUpon>OpticalReaderPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OpticalReaderTask.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="INormalizer.cs" />
     <Compile Include="Internal\TimedExecution.cs" />
@@ -114,7 +118,12 @@
       <HintPath>..\packages\ZXing.Net.0.12.0.0\lib\wp8\zxing.wp8.0.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="OpticalReaderPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <ProjectExtensions />
