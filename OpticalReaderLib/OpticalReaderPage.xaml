@@ -45,10 +45,6 @@
         <Border x:Name="ReaderBorder" Grid.Row="1" Grid.Column="1"
                 Width="440" Height="440" BorderThickness="2"
                 BorderBrush="{StaticResource PhoneForegroundBrush}">
-            <Grid>
-                <TextBlock x:Name="InformationTextBlock" Style="{StaticResource PhoneTextSubtleStyle}"
-                           TextAlignment="Center" VerticalAlignment="Bottom" TextWrapping="Wrap"/>
-            </Grid>
         </Border>
     </Grid>
 

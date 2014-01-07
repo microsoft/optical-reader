@@ -106,11 +106,6 @@ namespace OpticalReaderLib
 
             _zoom = parameters.Zoom;
 
-            if (parameters.IsAccurate)
-            {
-                InformationTextBlock.Text = String.Format("Minimum focus distance is {0} cm", parameters.Distance / 10);
-            }
-
             AdaptToOrientation();
 
             ViewfinderVideoBrush.SetSource(_device);
