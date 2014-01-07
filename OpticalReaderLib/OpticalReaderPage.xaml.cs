@@ -18,6 +18,7 @@ namespace OpticalReaderLib
         private double _zoom = 0;
         private double _rotation = 0;
         private bool _processing = false;
+        private bool _focusing = false;
         private DateTime _lastSuccess = DateTime.Now;
         private PhotoCaptureDevice _device = null;
 
@@ -182,7 +183,7 @@ namespace OpticalReaderLib
 
         private void Camera_PreviewFrameAvailable(ICameraCaptureDevice sender, object args)
         {
-            if (!_processing)
+            if (!_processing && !_focusing)
             {
                 _processing = true;
 
@@ -248,6 +249,8 @@ namespace OpticalReaderLib
                 {
                     try
                     {
+                        _focusing = true;
+
                         var status = await _device.FocusAsync();
 
                         _lastSuccess = DateTime.Now;
@@ -258,6 +261,8 @@ namespace OpticalReaderLib
                     {
                         System.Diagnostics.Debug.WriteLine(String.Format("Focusing camera failed: {0}\n{1}", ex.Message, ex.StackTrace));
                     }
+
+                    _focusing = false;
                 }
             }
         }

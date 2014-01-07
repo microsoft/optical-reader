@@ -46,11 +46,14 @@ namespace OpticalReaderLib
 
                 _instance = null;
 
-                _applicationFrame.GoBack();
-
                 var result = new OpticalReaderResult(processResult, thumbnail);
 
-                instance.FireCompleted(instance, result, null);
+                _applicationFrame.GoBack();
+
+                _applicationFrame.Dispatcher.BeginInvoke(() =>
+                    {
+                        instance.FireCompleted(instance, result, null);
+                    });
             }
         }
 
