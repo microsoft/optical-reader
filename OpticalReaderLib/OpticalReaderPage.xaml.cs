@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using Windows.Phone.Media.Capture;
@@ -220,8 +221,11 @@ namespace OpticalReaderLib
         {
             var result = await _processor.ProcessAsync(frame, rotation, zoom);
 
+            InterestAreaPolygon.Points = null;
+
             if (result != null)
             {
+                var thumbnail = GenerateThumbnail();
                 var interestPointCollection = new PointCollection();
 
                 foreach (var point in result.InterestPoints)
@@ -233,18 +237,13 @@ namespace OpticalReaderLib
 
                 _lastSuccess = DateTime.Now;
 
-                var thumbnailFrame = result.Thumbnail;
-
-                var thumbnailBitmap = await OpticalReaderLib.Utilities.RenderPreviewAsync(thumbnailFrame,
-                    new Windows.Foundation.Size(thumbnailFrame.Dimensions.Width, thumbnailFrame.Dimensions.Height));
-
-                OpticalReaderTask.CompleteTask(result, thumbnailBitmap);
-
+                Dispatcher.BeginInvoke(() =>
+                    {
+                        OpticalReaderTask.CompleteTask(result, thumbnail);
+                    });
             }
             else
             {
-                InterestAreaPolygon.Points = null;
-
                 if ((DateTime.Now - _lastSuccess).TotalMilliseconds > 2500)
                 {
                     try
@@ -261,6 +260,26 @@ namespace OpticalReaderLib
                     }
                 }
             }
+        }
+
+        private WriteableBitmap GenerateThumbnail()
+        {
+            var thumbnailBitmap = new WriteableBitmap((int)ReaderBorder.ActualWidth, (int)ReaderBorder.ActualHeight);
+            var thumbnailTransform = new CompositeTransform()
+            {
+                CenterX = Canvas.Width / 2.0,
+                CenterY = Canvas.Height / 2.0,
+                ScaleX = _zoom,
+                ScaleY = _zoom,
+                Rotation = _rotation,
+                TranslateX = -(Canvas.ActualWidth - ReaderBorder.ActualWidth) / 2,
+                TranslateY = -(Canvas.ActualHeight - ReaderBorder.ActualHeight) / 2
+            };
+
+            thumbnailBitmap.Render(Canvas, thumbnailTransform);
+            thumbnailBitmap.Invalidate();
+
+            return thumbnailBitmap;
         }
     }
 }

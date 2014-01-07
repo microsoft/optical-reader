@@ -13,7 +13,6 @@ namespace OpticalReaderLib
         public byte[] Data = null;
         public string Format = null;
         public List<Windows.Foundation.Point> InterestPoints = null;
-        public Frame Thumbnail = null;
     }
 
     public abstract class BasicProcessor : IProcessor
@@ -70,16 +69,19 @@ namespace OpticalReaderLib
 
                 var interestPoints = decodeResult.InterestPoints;
 
-                if (normalizeResult != null && normalizeResult.Translate != null)
+                if (interestPoints != null)
                 {
-                    var translatedInterestPoints = new List<Windows.Foundation.Point>();
-
-                    foreach (var point in interestPoints)
+                    if (normalizeResult != null && normalizeResult.Translate != null)
                     {
-                        translatedInterestPoints.Add(normalizeResult.Translate(point));
-                    }
+                        var translatedInterestPoints = new List<Windows.Foundation.Point>();
 
-                    interestPoints = translatedInterestPoints;
+                        foreach (var point in interestPoints)
+                        {
+                            translatedInterestPoints.Add(normalizeResult.Translate(point));
+                        }
+
+                        interestPoints = translatedInterestPoints;
+                    }
                 }
 
                 return new ProcessResult()
@@ -87,8 +89,7 @@ namespace OpticalReaderLib
                     Data = decodeResult.Data,
                     Format = decodeResult.Format,
                     Text = decodeResult.Text,
-                    InterestPoints = interestPoints,
-                    Thumbnail = normalizeResult != null ? normalizeResult.Frame : null
+                    InterestPoints = interestPoints
                 };
             }
             else
