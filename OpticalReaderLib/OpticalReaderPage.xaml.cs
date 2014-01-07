@@ -233,7 +233,12 @@ namespace OpticalReaderLib
 
                 _lastSuccess = DateTime.Now;
 
-                OpticalReaderTask.CompleteTask(result);
+                var thumbnailFrame = result.Thumbnail;
+
+                var thumbnailBitmap = await OpticalReaderLib.Utilities.RenderPreviewAsync(thumbnailFrame,
+                    new Windows.Foundation.Size(thumbnailFrame.Dimensions.Width, thumbnailFrame.Dimensions.Height));
+
+                OpticalReaderTask.CompleteTask(result, thumbnailBitmap);
 
             }
             else

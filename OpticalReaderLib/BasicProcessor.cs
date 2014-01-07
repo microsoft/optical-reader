@@ -13,6 +13,7 @@ namespace OpticalReaderLib
         public byte[] Data = null;
         public string Format = null;
         public List<Windows.Foundation.Point> InterestPoints = null;
+        public Frame Thumbnail = null;
     }
 
     public abstract class BasicProcessor : IProcessor
@@ -86,22 +87,13 @@ namespace OpticalReaderLib
                     Data = decodeResult.Data,
                     Format = decodeResult.Format,
                     Text = decodeResult.Text,
-                    InterestPoints = interestPoints
+                    InterestPoints = interestPoints,
+                    Thumbnail = normalizeResult != null ? normalizeResult.Frame : null
                 };
             }
             else
             {
                 return null;
-            }
-        }
-
-        public virtual async Task<WriteableBitmap> RenderPreviewAsync(Frame frame, Windows.Foundation.Size size)
-        {
-            using (var bitmap = new Bitmap(frame.Dimensions, Internal.Utilities.FrameFormatToColorMode(frame.Format), frame.Pitch, frame.Buffer.AsBuffer()))
-            using (var source = new BitmapImageSource(bitmap))
-            using (var renderer = new WriteableBitmapRenderer(source, new WriteableBitmap((int)size.Width, (int)size.Height), OutputOption.Stretch))
-            {
-                return await renderer.RenderAsync();
             }
         }
     }

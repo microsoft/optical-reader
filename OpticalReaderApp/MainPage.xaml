@@ -29,6 +29,7 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <StackPanel>
+                <Image x:Name="ThumbnailImage"/>
                 <TextBlock x:Name="TypeTextBlock" TextWrapping="Wrap" Margin="12"/>
                 <TextBlock x:Name="DescriptionTextBlock" TextWrapping="Wrap" Margin="12"/>
             </StackPanel>

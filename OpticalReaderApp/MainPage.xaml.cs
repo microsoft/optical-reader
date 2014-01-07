@@ -25,6 +25,7 @@ namespace OpticalReaderApp
         {
             TypeTextBlock.Text = "";
             DescriptionTextBlock.Text = "";
+            ThumbnailImage.Source = null;
 
             _task.Show();
         }
@@ -37,6 +38,7 @@ namespace OpticalReaderApp
 
                 TypeTextBlock.Text = String.Format("{0} ({1} bytes)", e.Format, e.Data.Length);
                 DescriptionTextBlock.Text = e.Text;
+                ThumbnailImage.Source = e.Thumbnail;
             }
             else
             {

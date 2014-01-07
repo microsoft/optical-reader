@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Nokia.Graphics.Imaging;
+using System;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace OpticalReaderLib
 {
@@ -37,6 +41,16 @@ namespace OpticalReaderLib
                     Zoom = Internal.Utilities.CalculateZoom(new Windows.Foundation.Size(3.2, 2.4), sensorRotation, 26, sensorResolution, objectSize, 100, objectResolution),
                     Distance = 100
                 };
+            }
+        }
+
+        public static async Task<WriteableBitmap> RenderPreviewAsync(Frame frame, Windows.Foundation.Size size)
+        {
+            using (var bitmap = new Bitmap(frame.Dimensions, Internal.Utilities.FrameFormatToColorMode(frame.Format), frame.Pitch, frame.Buffer.AsBuffer()))
+            using (var source = new BitmapImageSource(bitmap))
+            using (var renderer = new WriteableBitmapRenderer(source, new WriteableBitmap((int)size.Width, (int)size.Height), OutputOption.Stretch))
+            {
+                return await renderer.RenderAsync();
             }
         }
     }

@@ -7,17 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 
 namespace OpticalReaderLib
 {
     public class OpticalReaderResult : TaskEventArgs
     {
-        public string Text { get; private set; }
-        public byte[] Data { get; private set; }
-        public string Format { get; private set; }
+        public string Text { get; internal set; }
+        public byte[] Data { get; internal set; }
+        public string Format { get; internal set; }
+        public WriteableBitmap Thumbnail { get; internal set; }
 
-        public OpticalReaderResult(ProcessResult processResult)
+        public OpticalReaderResult(ProcessResult processResult, WriteableBitmap thumbnail)
             : base(processResult != null ? TaskResult.OK : TaskResult.Cancel)
         {
             if (processResult != null)
@@ -26,6 +28,8 @@ namespace OpticalReaderLib
                 Data = processResult.Data;
                 Format = processResult.Format;
             }
+
+            Thumbnail = thumbnail;
         }
     }
 
@@ -34,7 +38,7 @@ namespace OpticalReaderLib
         private static OpticalReaderTask _instance = null;
         private static PhoneApplicationFrame _applicationFrame = null;
 
-        public static void CompleteTask(ProcessResult processResult)
+        public static void CompleteTask(ProcessResult processResult, WriteableBitmap thumbnail)
         {
             if (_instance != null)
             {
@@ -44,7 +48,7 @@ namespace OpticalReaderLib
 
                 _applicationFrame.GoBack();
 
-                var result = new OpticalReaderResult(processResult);
+                var result = new OpticalReaderResult(processResult, thumbnail);
 
                 instance.FireCompleted(instance, result, null);
             }
@@ -63,7 +67,7 @@ namespace OpticalReaderLib
                     _applicationFrame.GoBack();
                 }
 
-                instance.FireCompleted(instance, new OpticalReaderResult(null), null);
+                instance.FireCompleted(instance, new OpticalReaderResult(null, null), null);
             }
         }
 
