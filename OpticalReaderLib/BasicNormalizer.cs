@@ -8,20 +8,6 @@ namespace OpticalReaderLib
 {
     class BasicNormalizer : INormalizer
     {
-        public async Task<NormalizeResult> NormalizeAsync(Frame frame, double rotation, double zoom)
-        {
-            var minSide = Math.Min(frame.Dimensions.Width, frame.Dimensions.Height) / zoom;
-            var area = new Windows.Foundation.Rect()
-            {
-                Width = minSide,
-                Height = minSide,
-                X = (frame.Dimensions.Width - minSide) / 2.0,
-                Y = (frame.Dimensions.Height - minSide) / 2.0
-            };
-
-            return await NormalizeAsync(frame, area, rotation);
-        }
-
         public async Task<NormalizeResult> NormalizeAsync(Frame frame, Windows.Foundation.Rect area, double rotation)
         {
             using (var bitmap = new Bitmap(frame.Dimensions, Internal.Utilities.FrameFormatToColorMode(frame.Format), frame.Pitch, frame.Buffer.AsBuffer()))

@@ -18,7 +18,7 @@ namespace OpticalReaderLib
             Decoder = decoder;
         }
 
-        public virtual async Task<ProcessResult> ProcessAsync(Frame frame, double rotation, double zoom)
+        public virtual async Task<ProcessResult> ProcessAsync(Frame frame, Windows.Foundation.Rect area, double rotation)
         {
             var timedExecution = new Internal.TimedExecution();
             var normalizeTime = new TimeSpan(0);
@@ -30,7 +30,7 @@ namespace OpticalReaderLib
             if (Normalizer != null)
             {
                 normalizeResult = await timedExecution.ExecuteAsync<NormalizeResult>(
-                    Normalizer.NormalizeAsync(frame, rotation, zoom).AsAsyncOperation());
+                    Normalizer.NormalizeAsync(frame, area, rotation).AsAsyncOperation());
 
                 normalizeTime = timedExecution.ExecutionTime;
                 frame = normalizeResult.Frame;

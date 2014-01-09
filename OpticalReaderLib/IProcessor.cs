@@ -16,6 +16,6 @@ namespace OpticalReaderLib
 
     public interface IProcessor
     {
-        Task<ProcessResult> ProcessAsync(Frame frame, double rotation, double zoom);
+        Task<ProcessResult> ProcessAsync(Frame frame, Windows.Foundation.Rect area, double rotation);
     }
 }

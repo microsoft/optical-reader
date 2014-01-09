@@ -19,8 +19,13 @@ namespace OpticalReaderLib
         public string Format { get; internal set; }
         public WriteableBitmap Thumbnail { get; internal set; }
 
-        public OpticalReaderResult(ProcessResult processResult, WriteableBitmap thumbnail)
-            : base(processResult != null ? TaskResult.OK : TaskResult.Cancel)
+        public OpticalReaderResult(TaskResult taskResult)
+            : base(taskResult)
+        {
+        }
+
+        public OpticalReaderResult(TaskResult taskResult, ProcessResult processResult, WriteableBitmap thumbnail)
+            : base(taskResult)
         {
             if (processResult != null)
             {
@@ -36,7 +41,16 @@ namespace OpticalReaderLib
     public class OpticalReaderTask : Microsoft.Phone.Tasks.ChooserBase<OpticalReaderResult>
     {
         private static OpticalReaderTask _instance = null;
-        private static PhoneApplicationFrame _applicationFrame = null;
+
+        public static bool TaskPending
+        {
+            get
+            {
+                return _instance != null;
+            }
+        }
+
+        public static Windows.Foundation.Size ObjectSize { get; set; }
 
         public static void CompleteTask(ProcessResult processResult, WriteableBitmap thumbnail)
         {
@@ -46,14 +60,9 @@ namespace OpticalReaderLib
 
                 _instance = null;
 
-                var result = new OpticalReaderResult(processResult, thumbnail);
+                var result = new OpticalReaderResult(TaskResult.OK, processResult, thumbnail);
 
-                _applicationFrame.GoBack();
-
-                _applicationFrame.Dispatcher.BeginInvoke(() =>
-                    {
-                        instance.FireCompleted(instance, result, null);
-                    });
+                instance.FireCompleted(instance, result, null);
             }
         }
 
@@ -65,21 +74,24 @@ namespace OpticalReaderLib
 
                 _instance = null;
 
-                if (!navigatedBack)
+                if (navigatedBack)
                 {
-                    _applicationFrame.GoBack();
+                    instance.FireCompleted(instance, new OpticalReaderResult(TaskResult.Cancel), null);
                 }
-
-                instance.FireCompleted(instance, new OpticalReaderResult(null, null), null);
+                else
+                {
+                    instance.FireCompleted(instance, new OpticalReaderResult(TaskResult.None), null);
+                }
             }
         }
 
         public override void Show()
         {
             _instance = this;
-            _applicationFrame = (PhoneApplicationFrame)Application.Current.RootVisual;
 
-            _applicationFrame.Navigate(new Uri("/OpticalReaderLib;component/OpticalReaderPage.xaml", UriKind.Relative));
+            var applicationFrame = (PhoneApplicationFrame)Application.Current.RootVisual;
+
+            applicationFrame.Navigate(new Uri("/OpticalReaderLib;component/OpticalReaderPage.xaml", UriKind.Relative));
         }
     }
 }

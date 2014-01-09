@@ -17,7 +17,7 @@ namespace OpticalReaderLib
             {
                 effect.Filters = new List<IFilter>()
                 {
-                    new ContrastFilter(0.75)
+                    new ContrastFilter(0.5)
                 };
 
                 using (var newBitmap = new Bitmap(new Windows.Foundation.Size(frame.Dimensions.Width, frame.Dimensions.Height), Internal.Utilities.FrameFormatToColorMode(frame.Format)))

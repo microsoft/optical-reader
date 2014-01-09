@@ -11,7 +11,6 @@ namespace OpticalReaderLib
 
     public interface INormalizer
     {
-        Task<NormalizeResult> NormalizeAsync(Frame frame, double rotation, double zoom);
         Task<NormalizeResult> NormalizeAsync(Frame frame, Windows.Foundation.Rect area, double rotation);
     }
 }

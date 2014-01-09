@@ -1,6 +1,5 @@
 ﻿using Microsoft.Devices;
 using Microsoft.Phone.Controls;
-using OpticalReaderLib;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,106 +17,146 @@ namespace OpticalReaderLib
         private double _zoom = 0;
         private double _rotation = 0;
         private bool _processing = false;
-        private bool _focusing = false;
         private DateTime _lastSuccess = DateTime.Now;
         private PhotoCaptureDevice _device = null;
+        private Tuple<ProcessResult, WriteableBitmap> _resultTuple = null;
+        private bool _active = false;
+        private DispatcherTimer _timer = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1) };
 
         public OpticalReaderPage()
         {
             InitializeComponent();
 
-            OrientationChanged += ViewfinderPage_OrientationChanged;
+            _timer.Tick += NavigationTimer_Tick;
+        }
+
+        private void NavigationTimer_Tick(object sender, EventArgs e)
+        {
+            _timer.Stop();
+
+            if (NavigationService.CanGoBack)
+            {
+                NavigationService.GoBack();
+            }
+        }
+
+        ~OpticalReaderPage()
+        {
+            if (_device != null)
+            {
+                UninitializeCamera();
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            try
+            if (_device == null)
             {
                 InitializeCamera();
+
+                AdaptToOrientation();
+
+                _device.PreviewFrameAvailable += PhotoCaptureDevice_PreviewFrameAvailable;
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(String.Format("Initializing camera failed: {0}\n{1}", ex.Message, ex.StackTrace));
-            }
+
+            _active = true;
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
+            _active = false;
+
+            if (_processing && e.IsCancelable)
+            {
+                e.Cancel = true;
+
+                _timer.Start();
+            }
+            else
+            {
+                if (_device != null)
+                {
+                    _device.PreviewFrameAvailable -= PhotoCaptureDevice_PreviewFrameAvailable;
+
+                    UninitializeCamera();
+                }
+            }
+
             base.OnNavigatingFrom(e);
-
-            try
-            {
-                UninitializeCamera();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(String.Format("Uninitializing camera failed: {0}\n{1}", ex.Message, ex.StackTrace));
-            }
-
-            OpticalReaderTask.CancelTask(e.NavigationMode == NavigationMode.Back);
         }
 
-        private void ViewfinderPage_OrientationChanged(object sender, OrientationChangedEventArgs e)
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
+            base.OnNavigatedFrom(e);
+
+            if (OpticalReaderTask.TaskPending)
+            {
+                if (e.NavigationMode == NavigationMode.Back)
+                {
+                    if (_resultTuple != null)
+                    {
+                        OpticalReaderTask.CompleteTask(_resultTuple.Item1, _resultTuple.Item2);
+                    }
+                    else
+                    {
+                        OpticalReaderTask.CancelTask(true);
+                    }
+                }
+                else
+                {
+                    OpticalReaderTask.CancelTask(false);
+                }
+            }
+
+            _resultTuple = null;
+        }
+
+        protected override void OnOrientationChanged(OrientationChangedEventArgs e)
+        {
+            base.OnOrientationChanged(e);
+
             AdaptToOrientation();
         }
 
         private void InitializeCamera()
         {
-            var firstWideResolution = new Func<Windows.Foundation.Size[], Windows.Foundation.Size>((array) =>
-            {
-                foreach (var resolution in array)
-                {
-                    if (resolution.Width / resolution.Height > 1.6)
-                    {
-                        return resolution;
-                    }
-                }
-
-                throw new ArgumentException();
-            });
-
             var captureResolutions = PhotoCaptureDevice.GetAvailableCaptureResolutions(CameraSensorLocation.Back).ToArray();
             var previewResolutions = PhotoCaptureDevice.GetAvailablePreviewResolutions(CameraSensorLocation.Back).ToArray();
 
-            var captureResolution = firstWideResolution(captureResolutions);
-            var previewResolution = firstWideResolution(previewResolutions);
+            var captureResolution = GetFirstWideResolution(captureResolutions);
+            var previewResolution = GetFirstWideResolution(previewResolutions);
 
             var task = PhotoCaptureDevice.OpenAsync(CameraSensorLocation.Back, captureResolution).AsTask();
 
-            task.Wait(4000);
+            task.Wait();
 
             _device = task.Result;
-            _device.SetPreviewResolutionAsync(previewResolution).AsTask().Wait(1000);
+            _device.SetPreviewResolutionAsync(previewResolution).AsTask().Wait();
 
-            var objectSize = new Windows.Foundation.Size(65, 65);
+            var objectSize = OpticalReaderLib.OpticalReaderTask.ObjectSize;
             var objectResolutionSide = _device.PreviewResolution.Height * (ReaderBorder.Width - ReaderBorder.Margin.Top) / 480;
             var objectResolution = new Windows.Foundation.Size(objectResolutionSide, objectResolutionSide);
             var centerPoint = new Windows.Foundation.Point(previewResolution.Width / 2, previewResolution.Height / 2);
             var focusRegionSize = new Windows.Foundation.Size(objectResolutionSide, objectResolutionSide);
 
+            var parameters = OpticalReaderLib.Utilities.GetSuggestedParameters(_device.PreviewResolution, _device.SensorRotationInDegrees, objectSize, objectResolution);
+
+            _zoom = Math.Max(parameters.Zoom, 1.0);
+
             _device.FocusRegion = new Windows.Foundation.Rect(
                 centerPoint.X - focusRegionSize.Width / 2, centerPoint.Y - focusRegionSize.Height / 2,
                 focusRegionSize.Width, focusRegionSize.Height);
 
-            var parameters = OpticalReaderLib.Utilities.GetSuggestedParameters(_device.PreviewResolution, _device.SensorRotationInDegrees, objectSize, objectResolution);
-
-            _zoom = parameters.Zoom;
-
-            AdaptToOrientation();
-
             ViewfinderVideoBrush.SetSource(_device);
-
-            _device.PreviewFrameAvailable += Camera_PreviewFrameAvailable;
         }
 
         private void UninitializeCamera()
         {
             if (_device != null)
             {
-                _device.PreviewFrameAvailable -= Camera_PreviewFrameAvailable;
+                _device.PreviewFrameAvailable -= PhotoCaptureDevice_PreviewFrameAvailable;
 
                 _device.Dispose();
                 _device = null;
@@ -157,27 +196,40 @@ namespace OpticalReaderLib
                 _rotation = _device.SensorRotationInDegrees;
             }
 
+            ViewfinderVideoBrush.RelativeTransform = new ScaleTransform()
+            {
+                CenterX = 0.5,
+                CenterY = 0.5,
+                ScaleX = _zoom,
+                ScaleY = _zoom
+            };
+
             Canvas.RenderTransform = new CompositeTransform()
             {
                 CenterX = Canvas.Width / 2.0,
                 CenterY = Canvas.Height / 2.0,
-                ScaleX = _zoom,
-                ScaleY = _zoom,
                 Rotation = _rotation
             };
 
             InterestAreaPolygon.RenderTransform = new CompositeTransform()
             {
-                ScaleX = Canvas.Width / _device.PreviewResolution.Width,
-                ScaleY = Canvas.Width / _device.PreviewResolution.Width,
+                CenterX = 0.5,
+                CenterY = 0.5,
+                ScaleX = Canvas.Width / _device.PreviewResolution.Width * _zoom,
+                ScaleY = Canvas.Height / _device.PreviewResolution.Height * _zoom,
+                TranslateX = -(Canvas.Width * _zoom - Canvas.Width) / 2,
+                TranslateY = -(Canvas.Height * _zoom - Canvas.Height) / 2
             };
+
+            InterestAreaPolygon.StrokeThickness = 10.0 / _zoom;
         }
 
-        private void Camera_PreviewFrameAvailable(ICameraCaptureDevice sender, object args)
+        private void PhotoCaptureDevice_PreviewFrameAvailable(ICameraCaptureDevice sender, object args)
         {
-            if (!_processing && !_focusing)
+            if (_active && !_processing)
             {
                 _processing = true;
+                _device.PreviewFrameAvailable -= PhotoCaptureDevice_PreviewFrameAvailable;
 
                 var width = (uint)_device.PreviewResolution.Width;
                 var height = (uint)_device.PreviewResolution.Height;
@@ -196,29 +248,56 @@ namespace OpticalReaderLib
 
                 Dispatcher.BeginInvoke(async () =>
                 {
-                    try
+                    if (_active)
                     {
-                        await ProcessFrameAsync(frame, _rotation, _zoom);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(String.Format("Processing frame failed: {0}\n{1}", ex.Message, ex.StackTrace));
-                    }
+                        _resultTuple = await ProcessFrameAsync(frame);
+                        _processing = false;
 
-                    _processing = false;
+                        if (_resultTuple != null)
+                        {
+                            _active = false;
+
+                            NavigationService.GoBack();
+                        }
+                        else
+                        {
+                            _device.PreviewFrameAvailable += PhotoCaptureDevice_PreviewFrameAvailable;
+                        }
+                    }
+                    else
+                    {
+                        _processing = false;
+                    }
                 });
             }
         }
 
-        private async Task ProcessFrameAsync(OpticalReaderLib.Frame frame, double rotation, double zoom)
+        private async Task<Tuple<ProcessResult, WriteableBitmap>> ProcessFrameAsync(OpticalReaderLib.Frame frame)
         {
-            var result = await _processor.ProcessAsync(frame, rotation, zoom);
+            System.Diagnostics.Debug.WriteLine("Start processing");
+            
+            var rectSize = new Windows.Foundation.Size(
+                ReaderBorder.ActualWidth / Canvas.ActualWidth * frame.Dimensions.Width / _zoom,
+                ReaderBorder.ActualHeight / Canvas.ActualHeight * frame.Dimensions.Height / _zoom);
+
+            var rectOrigin = new Windows.Foundation.Point(
+                frame.Dimensions.Width / 2 - rectSize.Width / 2,
+                frame.Dimensions.Height / 2 - rectSize.Height / 2);
+
+            var area = new Windows.Foundation.Rect(rectOrigin, rectSize);
+
+            var result = await _processor.ProcessAsync(frame, area, _rotation);
+
+            System.Diagnostics.Debug.WriteLine("Stop processing");
 
             InterestAreaPolygon.Points = null;
 
             if (result != null)
             {
+                _lastSuccess = DateTime.Now;
+
                 var thumbnail = GenerateThumbnail();
+
                 var interestPointCollection = new PointCollection();
 
                 foreach (var point in result.InterestPoints)
@@ -228,21 +307,16 @@ namespace OpticalReaderLib
 
                 InterestAreaPolygon.Points = interestPointCollection;
 
-                _lastSuccess = DateTime.Now;
-
-                Dispatcher.BeginInvoke(() =>
-                    {
-                        OpticalReaderTask.CompleteTask(result, thumbnail);
-                    });
+                return new Tuple<ProcessResult, WriteableBitmap>(result, thumbnail);
             }
             else
             {
-                if ((DateTime.Now - _lastSuccess).TotalMilliseconds > 2500)
+                var sinceLastSuccess = DateTime.Now - _lastSuccess;
+
+                if (sinceLastSuccess.TotalMilliseconds > 2500)
                 {
                     try
                     {
-                        _focusing = true;
-
                         var status = await _device.FocusAsync();
 
                         _lastSuccess = DateTime.Now;
@@ -253,10 +327,23 @@ namespace OpticalReaderLib
                     {
                         System.Diagnostics.Debug.WriteLine(String.Format("Focusing camera failed: {0}\n{1}", ex.Message, ex.StackTrace));
                     }
+                }
 
-                    _focusing = false;
+                return null;
+            }
+        }
+
+        private Windows.Foundation.Size GetFirstWideResolution(Windows.Foundation.Size[] resolutions)
+        {
+            foreach (var resolution in resolutions)
+            {
+                if (resolution.Width / resolution.Height > 1.6)
+                {
+                    return resolution;
                 }
             }
+
+            throw new ArgumentException();
         }
 
         private WriteableBitmap GenerateThumbnail()
@@ -266,8 +353,6 @@ namespace OpticalReaderLib
             {
                 CenterX = Canvas.Width / 2.0,
                 CenterY = Canvas.Height / 2.0,
-                ScaleX = _zoom,
-                ScaleY = _zoom,
                 Rotation = _rotation,
                 TranslateX = -(Canvas.ActualWidth - ReaderBorder.ActualWidth) / 2,
                 TranslateY = -(Canvas.ActualHeight - ReaderBorder.ActualHeight) / 2
