@@ -136,7 +136,7 @@ namespace OpticalReaderLib
             _device.SetPreviewResolutionAsync(previewResolution).AsTask().Wait();
 
             var objectSize = OpticalReaderLib.OpticalReaderTask.ObjectSize;
-            var objectResolutionSide = _device.PreviewResolution.Height * (ReaderBorder.Width - ReaderBorder.Margin.Top) / 480;
+            var objectResolutionSide = _device.PreviewResolution.Height * (ReaderBorder.Height - 2 * ReaderBorder.Margin.Top) / 480;
             var objectResolution = new Windows.Foundation.Size(objectResolutionSide, objectResolutionSide);
             var centerPoint = new Windows.Foundation.Point(previewResolution.Width / 2, previewResolution.Height / 2);
             var focusRegionSize = new Windows.Foundation.Size(objectResolutionSide, objectResolutionSide);
@@ -182,6 +182,11 @@ namespace OpticalReaderLib
             }
 
             Canvas.Height = _device.PreviewResolution.Height * Canvas.Width / _device.PreviewResolution.Width;
+
+            var fillScreenScaler = 480.0 / Canvas.Height;
+
+            Canvas.Width *= fillScreenScaler;
+            Canvas.Height *= fillScreenScaler;
 
             if (Orientation.HasFlag(PageOrientation.LandscapeLeft))
             {
@@ -307,7 +312,7 @@ namespace OpticalReaderLib
 
                 InterestAreaPolygon.Points = interestPointCollection;
 
-                return new Tuple<ProcessResult, WriteableBitmap>(result, thumbnail);
+                return null;// new Tuple<ProcessResult, WriteableBitmap>(result, thumbnail);
             }
             else
             {
