@@ -51,7 +51,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Slider x:Name="SizeSlider" Minimum="1" Maximum="10" Margin="0,12,0,-20"
+                <Slider x:Name="SizeSlider" Minimum="1" Maximum="11" Margin="0,12,0,-20"
                         ValueChanged="SizeSlider_ValueChanged" Value="6"/>
                 <TextBlock x:Name="SizeTextBlock" Grid.Column="1" VerticalAlignment="Center" Margin="12"/>
             </Grid>

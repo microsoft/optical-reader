@@ -27,7 +27,7 @@ namespace OpticalReaderApp
         {
             base.OnNavigatedTo(e);
 
-            SizeTextBlock.Text = String.Format("{0}x{0} cm", _size);
+            SetSizeTextBlockText(_size);
 
             if (_taskResult != null)
             {
@@ -59,7 +59,14 @@ namespace OpticalReaderApp
             DescriptionTextBlock.Text = "";
             ThumbnailImage.Source = null;
 
-            OpticalReaderLib.OpticalReaderTask.ObjectSize = new Windows.Foundation.Size(_size * 10, _size *10);
+            if (_size <= 10)
+            {
+                OpticalReaderLib.OpticalReaderTask.ObjectSize = new Windows.Foundation.Size(_size * 10, _size * 10);
+            }
+            else
+            {
+                OpticalReaderLib.OpticalReaderTask.ObjectSize = new Windows.Foundation.Size(0, 0);
+            }
 
             _task.Show();
         }
@@ -73,9 +80,21 @@ namespace OpticalReaderApp
         {
             _size = (int)e.NewValue;
 
+            SetSizeTextBlockText(_size);
+        }
+
+        private void SetSizeTextBlockText(int size)
+        {
             if (SizeTextBlock != null)
             {
-                SizeTextBlock.Text = String.Format("{0}x{0} cm", _size);
+                if (_size <= 10)
+                {
+                    SizeTextBlock.Text = String.Format("{0}x{0} cm", _size);
+                }
+                else
+                {
+                    SizeTextBlock.Text = "Default";
+                }
             }
         }
     }

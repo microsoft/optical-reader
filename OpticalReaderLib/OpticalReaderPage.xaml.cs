@@ -135,15 +135,23 @@ namespace OpticalReaderLib
             _device = task.Result;
             _device.SetPreviewResolutionAsync(previewResolution).AsTask().Wait();
 
-            var objectSize = OpticalReaderLib.OpticalReaderTask.ObjectSize;
             var objectResolutionSide = _device.PreviewResolution.Height * (ReaderBorder.Height - 2 * ReaderBorder.Margin.Top) / 480;
             var objectResolution = new Windows.Foundation.Size(objectResolutionSide, objectResolutionSide);
-            var centerPoint = new Windows.Foundation.Point(previewResolution.Width / 2, previewResolution.Height / 2);
             var focusRegionSize = new Windows.Foundation.Size(objectResolutionSide, objectResolutionSide);
+            var objectSize = OpticalReaderLib.OpticalReaderTask.ObjectSize;
 
-            var parameters = OpticalReaderLib.Utilities.GetSuggestedParameters(_device.PreviewResolution, _device.SensorRotationInDegrees, objectSize, objectResolution);
+            if (objectSize.Width * objectSize.Height > 0)
+            {
+                var parameters = OpticalReaderLib.Utilities.GetSuggestedParameters(_device.PreviewResolution, _device.SensorRotationInDegrees, objectSize, objectResolution);
 
-            _zoom = Math.Max(parameters.Zoom, 1.0);
+                _zoom = Math.Max(parameters.Zoom, 1.0);
+            }
+            else
+            {
+                _zoom = 1.0;
+            }
+
+            var centerPoint = new Windows.Foundation.Point(previewResolution.Width / 2, previewResolution.Height / 2);
 
             _device.FocusRegion = new Windows.Foundation.Rect(
                 centerPoint.X - focusRegionSize.Width / 2, centerPoint.Y - focusRegionSize.Height / 2,
