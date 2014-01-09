@@ -43,7 +43,7 @@
         <Rectangle Fill="Black" Grid.Row="2" Grid.ColumnSpan="3" Opacity="0.5"/>
 
         <Border x:Name="ReaderBorder" Grid.Row="1" Grid.Column="1"
-                Width="440" Height="440" BorderThickness="2"
+                Width="440" Height="440" BorderThickness="4"
                 BorderBrush="{StaticResource PhoneForegroundBrush}">
         </Border>
     </Grid>
