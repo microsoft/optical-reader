@@ -7,14 +7,6 @@ using System.Windows.Media.Imaging;
 
 namespace OpticalReaderLib
 {
-    public class ProcessResult
-    {
-        public string Text = null;
-        public byte[] Data = null;
-        public string Format = null;
-        public List<Windows.Foundation.Point> InterestPoints = null;
-    }
-
     public abstract class BasicProcessor : IProcessor
     {
         public INormalizer Normalizer { get; set; }
