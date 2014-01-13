@@ -34,9 +34,9 @@
             </Grid.RowDefinitions>
             
             <StackPanel x:Name="GuideStackPanel">
-                <TextBlock TextWrapping="Wrap" Margin="12,0,12,0"
-                           Text="Select the target barcode size with the slider to optimize the reader for the requested barcode size, and click on the 'read code' button to open the reader view."/>
-                <TextBlock TextWrapping="Wrap" Margin="12"
+                <TextBlock TextWrapping="Wrap" Margin="12,0,12,0" FontSize="16"
+                           Text="Select the target barcode size with the slider to optimize the reader for the requested barcode size, toggle the checkbox to select between built-in enhancer and application specific custom enhancer, and click on the 'read code' button to open the reader view."/>
+                <TextBlock TextWrapping="Wrap" Margin="12" FontSize="16"
                            Text="According to the size setting and the charasteristics of the device's camera, like minimum focus distance and focal length, reader automatically optimizes digital zoom so that the user is invited to bring the device to the optimal reading distance from the code. Optimal reading distance is typically the device camera specific minimum focus distance, but not any closer, so that the camera is able to focus and the maximum available resolution is used to capture the barcode itself before sending it to the barcode decoder."/>
             </StackPanel>
 
@@ -47,13 +47,44 @@
             </StackPanel>
 
             <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Slider x:Name="SizeSlider" Minimum="1" Maximum="11" Margin="0,12,0,-20"
-                        ValueChanged="SizeSlider_ValueChanged" Value="6"/>
-                <TextBlock x:Name="SizeTextBlock" Grid.Column="1" VerticalAlignment="Center" Margin="12"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox x:Name="DebugCheckBox"/>
+                    <TextBlock x:Name="DebugTextBlock" Grid.Column="1" VerticalAlignment="Center" Margin="0"
+                               Text="Show debug information"/>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox x:Name="ProcessorCheckBox"/>
+                    <TextBlock x:Name="ProcessorTextBlock" Grid.Column="1" VerticalAlignment="Center" Margin="0"
+                               Text="Use custom enhancer (contrast looper)"/>
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Slider x:Name="SizeSlider" Minimum="1" Maximum="11" Margin="0,12,0,-20"
+                            ValueChanged="SizeSlider_ValueChanged" Value="6"/>
+                    <TextBlock x:Name="SizeTextBlock" Grid.Column="1" VerticalAlignment="Center" Margin="12"/>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>

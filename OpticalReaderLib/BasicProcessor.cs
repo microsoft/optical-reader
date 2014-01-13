@@ -12,6 +12,7 @@ namespace OpticalReaderLib
         public INormalizer Normalizer { get; set; }
         public IEnhancer Enhancer { get; set; }
         public IDecoder Decoder { get; private set; }
+        public event EventHandler<DebugFrameEventArgs> DebugFrameAvailable;
 
         public BasicProcessor(IDecoder decoder)
         {
@@ -50,15 +51,20 @@ namespace OpticalReaderLib
 
             decodeTime = timedExecution.ExecutionTime;
 
-            if (decodeResult != null)
-            {
 #if DEBUG
-                System.Diagnostics.Debug.WriteLine(String.Format(
-                    "Normalizing took {0} ms, enhancing took {1} ms, decoding took {2}, which totals to {3} ms",
-                    (int)normalizeTime.TotalMilliseconds, (int)enhanceTime.TotalMilliseconds, (int)decodeTime.TotalMilliseconds,
-                    (int)(normalizeTime + enhanceTime + decodeTime).TotalMilliseconds));
+            System.Diagnostics.Debug.WriteLine(String.Format(
+                "Normalizing took {0} ms, enhancing took {1} ms, decoding took {2}, which totals to {3} ms",
+                (int)normalizeTime.TotalMilliseconds, (int)enhanceTime.TotalMilliseconds, (int)decodeTime.TotalMilliseconds,
+                (int)(normalizeTime + enhanceTime + decodeTime).TotalMilliseconds));
 #endif // DEBUG
 
+            if (DebugFrameAvailable != null)
+            {
+                DebugFrameAvailable(this, new DebugFrameEventArgs() { DebugFrame = frame });
+            }
+
+            if (decodeResult != null)
+            {
                 var interestPoints = decodeResult.InterestPoints;
 
                 if (interestPoints != null)

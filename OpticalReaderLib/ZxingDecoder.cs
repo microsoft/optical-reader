@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace OpticalReaderLib
 {
-    class ZxingDecoder : IDecoder
+    public class ZxingDecoder : IDecoder
     {
         private ZXing.BarcodeReader _reader = new ZXing.BarcodeReader();
 

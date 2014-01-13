@@ -48,6 +48,15 @@
                     BorderBrush="White">
             </Border>
 
+            <Grid x:Name="DebugGrid" Grid.Column="1" VerticalAlignment="Bottom"
+                  Visibility="Collapsed" Margin="0,0,0,24">
+
+                <Border Width="100" Height="100" BorderBrush="White" BorderThickness="2"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <Image x:Name="DebugImage"/>
+                </Border>
+            </Grid>
+
             <Grid x:Name="ResultGrid" Grid.Row="2" Grid.Column="1" VerticalAlignment="Top"
                   Tap="ResultGrid_Tap" Visibility="Collapsed" Grid.ColumnSpan="2" Margin="0,24,0,0">
                 <Grid.RowDefinitions>

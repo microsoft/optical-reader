@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OpticalReaderLib
 {
-    class BasicEnhancer : IEnhancer
+    public class BasicEnhancer : IEnhancer
     {
         public async Task<EnhanceResult> EnhanceAsync(Frame frame)
         {

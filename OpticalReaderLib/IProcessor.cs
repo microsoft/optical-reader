@@ -16,6 +16,13 @@ namespace OpticalReaderLib
 
     public interface IProcessor
     {
+        event EventHandler<DebugFrameEventArgs> DebugFrameAvailable;
+
         Task<ProcessResult> ProcessAsync(Frame frame, Windows.Foundation.Rect area, double rotation);
+    }
+
+    public class DebugFrameEventArgs : EventArgs 
+    {
+        public Frame DebugFrame = null;
     }
 }

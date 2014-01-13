@@ -65,12 +65,26 @@ namespace OpticalReaderLib
                     _device.PreviewFrameAvailable += PhotoCaptureDevice_PreviewFrameAvailable;
                 }
 
+                if (OpticalReaderTask.Instance.ShowDebugInformation)
+                {
+                    OpticalReaderTask.Instance.Processor.DebugFrameAvailable += Processor_DebugFrameAvailable;
+                    DebugGrid.Visibility = System.Windows.Visibility.Visible;
+                }
+
                 _active = true;
             }
             else
             {
                 NavigationService.GoBack();
             }
+        }
+
+        void Processor_DebugFrameAvailable(object sender, DebugFrameEventArgs e)
+        {
+            Dispatcher.BeginInvoke(async () =>
+                {
+                    DebugImage.Source = await OpticalReaderLib.Utilities.RenderPreviewAsync(e.DebugFrame, e.DebugFrame.Dimensions);
+                });
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -97,6 +111,12 @@ namespace OpticalReaderLib
 
             if (_device != null)
             {
+                if (OpticalReaderTask.Instance.ShowDebugInformation)
+                {
+                    OpticalReaderTask.Instance.Processor.DebugFrameAvailable -= Processor_DebugFrameAvailable;
+                    DebugGrid.Visibility = System.Windows.Visibility.Collapsed;
+                }
+
                 _device.PreviewFrameAvailable -= PhotoCaptureDevice_PreviewFrameAvailable;
 
                 UninitializeCamera();
@@ -362,7 +382,7 @@ namespace OpticalReaderLib
             {
                 var sinceLastSuccess = DateTime.Now - _lastSuccess;
 
-                if (sinceLastSuccess.TotalMilliseconds > 2500)
+                if (sinceLastSuccess > OpticalReaderTask.Instance.FocusInterval)
                 {
                     try
                     {

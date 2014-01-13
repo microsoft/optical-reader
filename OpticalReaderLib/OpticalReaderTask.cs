@@ -32,13 +32,17 @@ namespace OpticalReaderLib
         }
     }
 
-    public class OpticalReaderTask : Microsoft.Phone.Tasks.ChooserBase<OpticalReaderResult>
+    public class OpticalReaderTask : Microsoft.Phone.Tasks.ChooserBase<OpticalReaderResult>, IDisposable
     {
         private static OpticalReaderTask _instance = null;
 
         public IProcessor Processor { get; internal set; }
 
         public Windows.Foundation.Size ObjectSize { get; set; }
+
+        public TimeSpan FocusInterval { get; set; }
+
+        public bool ShowDebugInformation { get; set; }
 
         public OpticalReaderTask(IProcessor processor)
         {
@@ -54,6 +58,8 @@ namespace OpticalReaderLib
                 {
                     throw new Exception("Processor argument cannot be null.");
                 }
+
+                FocusInterval = new TimeSpan(0, 0, 0, 0, 2500);
             }
             else
             {
@@ -61,18 +67,18 @@ namespace OpticalReaderLib
             }
         }
 
-        ~OpticalReaderTask()
-        {
-            _instance = null;
-
-            Processor = null;
-        }
-
         public override void Show()
         {
             var applicationFrame = (PhoneApplicationFrame)Application.Current.RootVisual;
 
             applicationFrame.Navigate(new Uri("/OpticalReaderLib;component/OpticalReaderPage.xaml", UriKind.Relative));
+        }
+
+        public void Dispose()
+        {
+            _instance = null;
+
+            Processor = null;
         }
 
         #region Internal methods
