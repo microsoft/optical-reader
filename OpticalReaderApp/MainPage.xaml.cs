@@ -12,7 +12,7 @@ namespace OpticalReaderApp
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private OpticalReaderLib.OpticalReaderTask _task = new OpticalReaderLib.OpticalReaderTask();
+        private OpticalReaderLib.OpticalReaderTask _task = new OpticalReaderLib.OpticalReaderTask(new OpticalReaderLib.ZxingProcessor());
         private OpticalReaderLib.OpticalReaderResult _taskResult = null;
         private int _size = 3;
 

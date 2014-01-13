@@ -1,14 +1,8 @@
 ﻿using Microsoft.Phone.Controls;
 using Microsoft.Phone.Tasks;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 
 namespace OpticalReaderLib
 {
@@ -42,12 +36,61 @@ namespace OpticalReaderLib
     {
         private static OpticalReaderTask _instance = null;
 
-        public OpticalReaderTask()
+        public IProcessor Processor { get; internal set; }
+
+        public static Windows.Foundation.Size ObjectSize { get; set; }
+
+        public OpticalReaderTask(IProcessor processor)
         {
-            _instance = this;
+            if (_instance == null)
+            {
+                _instance = this;
+
+                if (processor != null)
+                {
+                    Processor = processor;
+                }
+                else
+                {
+                    throw new Exception("Processor argument cannot be null.");
+                }
+            }
+            else
+            {
+                throw new Exception("Only one instance of OpticalReaderTask is supported at a time and another instance already exists.");
+            }
         }
 
-        public static bool TaskPending
+        ~OpticalReaderTask()
+        {
+            _instance = null;
+
+            Processor = null;
+        }
+
+        public override void Show()
+        {
+            var applicationFrame = (PhoneApplicationFrame)Application.Current.RootVisual;
+
+            applicationFrame.Navigate(new Uri("/OpticalReaderLib;component/OpticalReaderPage.xaml", UriKind.Relative));
+        }
+
+        #region Internal methods
+
+        internal static OpticalReaderTask Instance
+        {
+            get
+            {
+                return _instance;
+            }
+
+            set
+            {
+                _instance = value;
+            }
+        }
+
+        internal static bool TaskPending
         {
             get
             {
@@ -55,9 +98,7 @@ namespace OpticalReaderLib
             }
         }
 
-        public static Windows.Foundation.Size ObjectSize { get; set; }
-
-        public static void CompleteTask(ProcessResult processResult, WriteableBitmap thumbnail)
+        internal static void CompleteTask(ProcessResult processResult, WriteableBitmap thumbnail)
         {
             if (_instance != null)
             {
@@ -69,7 +110,7 @@ namespace OpticalReaderLib
             }
         }
 
-        public static void CancelTask(bool navigatedBack)
+        internal static void CancelTask(bool navigatedBack)
         {
             if (_instance != null)
             {
@@ -86,11 +127,6 @@ namespace OpticalReaderLib
             }
         }
 
-        public override void Show()
-        {
-            var applicationFrame = (PhoneApplicationFrame)Application.Current.RootVisual;
-
-            applicationFrame.Navigate(new Uri("/OpticalReaderLib;component/OpticalReaderPage.xaml", UriKind.Relative));
-        }
+        #endregion Internal methods
     }
 }

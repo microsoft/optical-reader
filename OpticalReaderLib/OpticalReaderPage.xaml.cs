@@ -13,7 +13,7 @@ namespace OpticalReaderLib
 {
     public partial class OpticalReaderPage : PhoneApplicationPage
     {
-        private ZxingProcessor _processor = new ZxingProcessor();
+        private IProcessor _processor = null;
         private double _zoom = 0;
         private double _rotation = 0;
         private bool _processing = false;
@@ -57,6 +57,8 @@ namespace OpticalReaderLib
 
             if (_device == null)
             {
+                _processor = OpticalReaderTask.Instance.Processor;
+
                 InitializeCamera();
 
                 AdaptToOrientation();
@@ -120,6 +122,7 @@ namespace OpticalReaderLib
             ResultGrid.Visibility = System.Windows.Visibility.Collapsed;
 
             _resultTuple = null;
+            _processor = null;
         }
 
         protected override void OnOrientationChanged(OrientationChangedEventArgs e)
@@ -308,7 +311,7 @@ namespace OpticalReaderLib
 
         private async Task<Tuple<ProcessResult, WriteableBitmap>> ProcessFrameAsync(OpticalReaderLib.Frame frame)
         {
-            System.Diagnostics.Debug.WriteLine("Start processing");
+            //System.Diagnostics.Debug.WriteLine("Start processing");
             
             var rectSize = new Windows.Foundation.Size(
                 ReaderBorder.ActualWidth / Canvas.ActualWidth * frame.Dimensions.Width / _zoom,
@@ -331,7 +334,7 @@ namespace OpticalReaderLib
                 System.Diagnostics.Debug.WriteLine(String.Format("Processing frame failed: {0}\n{1}", ex.Message, ex.StackTrace));
             }
 
-            System.Diagnostics.Debug.WriteLine("Stop processing");
+            //System.Diagnostics.Debug.WriteLine("Stop processing");
 
             InterestAreaPolygon.Points = null;
 
