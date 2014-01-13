@@ -13,7 +13,6 @@ namespace OpticalReaderLib
 {
     public partial class OpticalReaderPage : PhoneApplicationPage
     {
-        private IProcessor _processor = null;
         private double _zoom = 0;
         private double _rotation = 0;
         private bool _processing = false;
@@ -55,18 +54,23 @@ namespace OpticalReaderLib
         {
             base.OnNavigatedTo(e);
 
-            if (_device == null)
+            if (e.NavigationMode != NavigationMode.Back && OpticalReaderTask.Instance != null)
             {
-                _processor = OpticalReaderTask.Instance.Processor;
+                if (_device == null)
+                {
+                    InitializeCamera();
 
-                InitializeCamera();
+                    AdaptToOrientation();
 
-                AdaptToOrientation();
+                    _device.PreviewFrameAvailable += PhotoCaptureDevice_PreviewFrameAvailable;
+                }
 
-                _device.PreviewFrameAvailable += PhotoCaptureDevice_PreviewFrameAvailable;
+                _active = true;
             }
-
-            _active = true;
+            else
+            {
+                NavigationService.GoBack();
+            }
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -122,7 +126,6 @@ namespace OpticalReaderLib
             ResultGrid.Visibility = System.Windows.Visibility.Collapsed;
 
             _resultTuple = null;
-            _processor = null;
         }
 
         protected override void OnOrientationChanged(OrientationChangedEventArgs e)
@@ -158,7 +161,7 @@ namespace OpticalReaderLib
             var objectResolutionSide = _device.PreviewResolution.Height * (ReaderBorder.Height - 2 * ReaderBorder.Margin.Top) / 480;
             var objectResolution = new Windows.Foundation.Size(objectResolutionSide, objectResolutionSide);
             var focusRegionSize = new Windows.Foundation.Size(objectResolutionSide, objectResolutionSide);
-            var objectSize = OpticalReaderLib.OpticalReaderTask.ObjectSize;
+            var objectSize = OpticalReaderLib.OpticalReaderTask.Instance.ObjectSize;
 
             if (objectSize.Width * objectSize.Height > 0)
             {
@@ -327,7 +330,7 @@ namespace OpticalReaderLib
 
             try
             {
-                result = await _processor.ProcessAsync(frame, area, _rotation);
+                result = await OpticalReaderTask.Instance.Processor.ProcessAsync(frame, area, _rotation);
             }
             catch (Exception ex)
             {

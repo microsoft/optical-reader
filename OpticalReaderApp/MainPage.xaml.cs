@@ -61,11 +61,11 @@ namespace OpticalReaderApp
 
             if (_size <= 10)
             {
-                OpticalReaderLib.OpticalReaderTask.ObjectSize = new Windows.Foundation.Size(_size * 10, _size * 10);
+                _task.ObjectSize = new Windows.Foundation.Size(_size * 10, _size * 10);
             }
             else
             {
-                OpticalReaderLib.OpticalReaderTask.ObjectSize = new Windows.Foundation.Size(0, 0);
+                _task.ObjectSize = new Windows.Foundation.Size(0, 0);
             }
 
             _task.Show();

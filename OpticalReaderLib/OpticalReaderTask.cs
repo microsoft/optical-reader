@@ -38,7 +38,7 @@ namespace OpticalReaderLib
 
         public IProcessor Processor { get; internal set; }
 
-        public static Windows.Foundation.Size ObjectSize { get; set; }
+        public Windows.Foundation.Size ObjectSize { get; set; }
 
         public OpticalReaderTask(IProcessor processor)
         {
