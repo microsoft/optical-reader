@@ -58,12 +58,13 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <Border Width="100" Height="100" BorderBrush="White" BorderThickness="2">
-                    <Image x:Name="ResultImage" VerticalAlignment="Top"/>
+                <Border Width="100" Height="100" BorderBrush="White" BorderThickness="2"
+                        VerticalAlignment="Top">
+                    <Image x:Name="ResultImage"/>
                 </Border>
 
-                <TextBlock x:Name="ResultTextBlock" Grid.Column="1" Margin="12,0,0,0"
-                       Style="{StaticResource PhoneTextLargeStyle}"
+                <TextBlock x:Name="ResultTextBlock" Grid.Column="1"
+                       Style="{StaticResource PhoneTextNormalStyle}" TextWrapping="Wrap"
                        VerticalAlignment="Center" Foreground="White"/>
             </Grid>
         </Grid>
