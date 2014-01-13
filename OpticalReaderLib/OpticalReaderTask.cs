@@ -42,11 +42,16 @@ namespace OpticalReaderLib
     {
         private static OpticalReaderTask _instance = null;
 
+        public OpticalReaderTask()
+        {
+            _instance = this;
+        }
+
         public static bool TaskPending
         {
             get
             {
-                return _instance != null;
+                return true;
             }
         }
 
@@ -57,8 +62,6 @@ namespace OpticalReaderLib
             if (_instance != null)
             {
                 var instance = _instance;
-
-                _instance = null;
 
                 var result = new OpticalReaderResult(TaskResult.OK, processResult, thumbnail);
 
@@ -71,8 +74,6 @@ namespace OpticalReaderLib
             if (_instance != null)
             {
                 var instance = _instance;
-
-                _instance = null;
 
                 if (navigatedBack)
                 {
@@ -87,8 +88,6 @@ namespace OpticalReaderLib
 
         public override void Show()
         {
-            _instance = this;
-
             var applicationFrame = (PhoneApplicationFrame)Application.Current.RootVisual;
 
             applicationFrame.Navigate(new Uri("/OpticalReaderLib;component/OpticalReaderPage.xaml", UriKind.Relative));

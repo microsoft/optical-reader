@@ -15,37 +15,61 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+        <Grid x:Name="ContentPanel">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
 
-        <Canvas x:Name="Canvas" Grid.ColumnSpan="3" Grid.RowSpan="3"
+            <Canvas x:Name="Canvas" Grid.ColumnSpan="3" Grid.RowSpan="3"
                 HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Canvas.Background>
-                <VideoBrush x:Name="ViewfinderVideoBrush" Stretch="Uniform"/>
-            </Canvas.Background>
+                <Canvas.Background>
+                    <VideoBrush x:Name="ViewfinderVideoBrush" Stretch="Uniform"/>
+                </Canvas.Background>
 
-            <Polygon x:Name="InterestAreaPolygon" Stroke="{StaticResource PhoneAccentBrush}"
-                     StrokeThickness="6" RenderTransformOrigin="0.5,0.5" Opacity="0.5"/>
-        </Canvas>
+                <Polygon x:Name="InterestAreaPolygon" Stroke="{StaticResource PhoneAccentBrush}"
+                         RenderTransformOrigin="0.5,0.5" Opacity="0.5"/>
+            </Canvas>
 
-        <Rectangle Fill="Black" Grid.Row="0" Grid.ColumnSpan="3" Opacity="0.5"/>
-        <Rectangle Fill="Black" Grid.Row="1" Grid.Column="0" Opacity="0.5"/>
-        <Rectangle Fill="Black" Grid.Row="1" Grid.Column="2" Opacity="0.5"/>
-        <Rectangle Fill="Black" Grid.Row="2" Grid.ColumnSpan="3" Opacity="0.5"/>
+            <Rectangle Fill="Black" Grid.Row="0" Grid.ColumnSpan="3" Opacity="0.25"/>
+            <Rectangle Fill="Black" Grid.Row="1" Grid.Column="0" Opacity="0.25"/>
+            <Rectangle Fill="Black" Grid.Row="1" Grid.Column="2" Opacity="0.25"/>
+            <Rectangle Fill="Black" Grid.Row="2" Grid.ColumnSpan="3" Opacity="0.25"/>
 
-        <Border x:Name="ReaderBorder" Grid.Row="1" Grid.Column="1"
-                Width="440" Height="440" BorderThickness="4"
-                BorderBrush="{StaticResource PhoneForegroundBrush}">
-        </Border>
+            <Border x:Name="ReaderBorder" Grid.Row="1" Grid.Column="1"
+                    Width="440" Height="440" BorderThickness="2"
+                    BorderBrush="White">
+            </Border>
+
+            <Grid x:Name="ResultGrid" Grid.Row="2" Grid.Column="1" VerticalAlignment="Top"
+                  Tap="ResultGrid_Tap" Visibility="Collapsed" Grid.ColumnSpan="2" Margin="0,24,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Border Width="100" Height="100" BorderBrush="White" BorderThickness="2">
+                    <Image x:Name="ResultImage" VerticalAlignment="Top"/>
+                </Border>
+
+                <TextBlock x:Name="ResultTextBlock" Grid.Column="1" Margin="12,0,0,0"
+                       Style="{StaticResource PhoneTextLargeStyle}"
+                       VerticalAlignment="Center" Foreground="White"/>
+            </Grid>
+        </Grid>
+        
+        <ProgressBar x:Name="ProgressBar" IsIndeterminate="False" Visibility="Collapsed"
+                     VerticalAlignment="Top"/>
     </Grid>
 
 </phone:PhoneApplicationPage>

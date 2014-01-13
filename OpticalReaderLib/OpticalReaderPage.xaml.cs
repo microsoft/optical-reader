@@ -32,10 +32,13 @@ namespace OpticalReaderLib
 
         private void NavigationTimer_Tick(object sender, EventArgs e)
         {
-            _timer.Stop();
-
-            if (NavigationService.CanGoBack)
+            if (!_processing && !_active && NavigationService.CanGoBack)
             {
+                _timer.Stop();
+
+                ProgressBar.IsIndeterminate = false;
+                ProgressBar.Visibility = System.Windows.Visibility.Collapsed;
+
                 NavigationService.GoBack();
             }
         }
@@ -66,21 +69,16 @@ namespace OpticalReaderLib
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            _active = false;
-
             if (_processing && e.IsCancelable)
             {
                 e.Cancel = true;
 
-                _timer.Start();
-            }
-            else
-            {
-                if (_device != null)
+                if (!_timer.IsEnabled)
                 {
-                    _device.PreviewFrameAvailable -= PhotoCaptureDevice_PreviewFrameAvailable;
-
-                    UninitializeCamera();
+                    _timer.Start();
+                    
+                    ProgressBar.IsIndeterminate = true;
+                    ProgressBar.Visibility = System.Windows.Visibility.Visible;
                 }
             }
 
@@ -90,6 +88,13 @@ namespace OpticalReaderLib
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
+
+            if (_device != null)
+            {
+                _device.PreviewFrameAvailable -= PhotoCaptureDevice_PreviewFrameAvailable;
+
+                UninitializeCamera();
+            }
 
             if (OpticalReaderTask.TaskPending)
             {
@@ -110,6 +115,10 @@ namespace OpticalReaderLib
                 }
             }
 
+            ResultTextBlock.Text = "";
+            ResultImage.Source = null;
+            ResultGrid.Visibility = System.Windows.Visibility.Collapsed;
+
             _resultTuple = null;
         }
 
@@ -118,6 +127,14 @@ namespace OpticalReaderLib
             base.OnOrientationChanged(e);
 
             AdaptToOrientation();
+        }
+
+        protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
+        {
+            _active = false;
+            _resultTuple = null;
+            
+            base.OnBackKeyPress(e);
         }
 
         private void InitializeCamera()
@@ -234,12 +251,12 @@ namespace OpticalReaderLib
                 TranslateY = -(Canvas.Height * _zoom - Canvas.Height) / 2
             };
 
-            InterestAreaPolygon.StrokeThickness = 10.0 / _zoom;
+            InterestAreaPolygon.StrokeThickness = 8.0 / _zoom;
         }
 
         private void PhotoCaptureDevice_PreviewFrameAvailable(ICameraCaptureDevice sender, object args)
         {
-            if (_active && !_processing)
+            if (_active && !_processing && _device != null)
             {
                 _processing = true;
                 _device.PreviewFrameAvailable -= PhotoCaptureDevice_PreviewFrameAvailable;
@@ -263,17 +280,21 @@ namespace OpticalReaderLib
                 {
                     if (_active)
                     {
-                        _resultTuple = await ProcessFrameAsync(frame);
+                        var tuple = await ProcessFrameAsync(frame);
+
                         _processing = false;
 
-                        if (_resultTuple != null)
+                        if (_active && _device != null)
                         {
-                            _active = false;
+                            if (tuple != null && ResultTextBlock.Text != tuple.Item1.Text)
+                            {
+                                _resultTuple = tuple;
 
-                            NavigationService.GoBack();
-                        }
-                        else
-                        {
+                                ResultTextBlock.Text = _resultTuple.Item1.Text;
+                                ResultImage.Source = _resultTuple.Item2;
+                                ResultGrid.Visibility = System.Windows.Visibility.Visible;
+                            }
+
                             _device.PreviewFrameAvailable += PhotoCaptureDevice_PreviewFrameAvailable;
                         }
                     }
@@ -299,7 +320,16 @@ namespace OpticalReaderLib
 
             var area = new Windows.Foundation.Rect(rectOrigin, rectSize);
 
-            var result = await _processor.ProcessAsync(frame, area, _rotation);
+            ProcessResult result = null;
+
+            try
+            {
+                result = await _processor.ProcessAsync(frame, area, _rotation);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(String.Format("Processing frame failed: {0}\n{1}", ex.Message, ex.StackTrace));
+            }
 
             System.Diagnostics.Debug.WriteLine("Stop processing");
 
@@ -320,7 +350,7 @@ namespace OpticalReaderLib
 
                 InterestAreaPolygon.Points = interestPointCollection;
 
-                return null;// new Tuple<ProcessResult, WriteableBitmap>(result, thumbnail);
+                return new Tuple<ProcessResult, WriteableBitmap>(result, thumbnail);
             }
             else
             {
@@ -375,6 +405,16 @@ namespace OpticalReaderLib
             thumbnailBitmap.Invalidate();
 
             return thumbnailBitmap;
+        }
+
+        private void ResultGrid_Tap(object sender, System.Windows.Input.GestureEventArgs e)
+        {
+            if (_active)
+            {
+                _active = false;
+
+                NavigationService.GoBack();
+            }
         }
     }
 }
