@@ -82,8 +82,9 @@ namespace OpticalReaderApp
                 _processor = new OpticalReaderLib.ZxingProcessor();
             }
 
-            _task = new OpticalReaderLib.OpticalReaderTask(_processor)
+            _task = new OpticalReaderLib.OpticalReaderTask()
             {
+                Processor = _processor,
                 ShowDebugInformation = showDebugInformation,
                 FocusInterval = focusInterval,
                 ObjectSize = objectSize,

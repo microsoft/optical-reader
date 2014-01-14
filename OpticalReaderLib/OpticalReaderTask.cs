@@ -35,8 +35,25 @@ namespace OpticalReaderLib
     public class OpticalReaderTask : Microsoft.Phone.Tasks.ChooserBase<OpticalReaderResult>, IDisposable
     {
         private static OpticalReaderTask _instance = null;
+        private IProcessor _processor = null;
 
-        public IProcessor Processor { get; internal set; }
+        public IProcessor Processor
+        {
+            get
+            {
+                if (_processor == null)
+                {
+                    _processor = new ZxingProcessor();
+                }
+
+                return _processor;
+            }
+
+            set
+            {
+                _processor = value;
+            }
+        }
 
         public Windows.Foundation.Size ObjectSize { get; set; }
 
@@ -46,20 +63,11 @@ namespace OpticalReaderLib
 
         public bool RequireConfirmation { get; set; }
 
-        public OpticalReaderTask(IProcessor processor)
+        public OpticalReaderTask()
         {
             if (_instance == null)
             {
                 _instance = this;
-
-                if (processor != null)
-                {
-                    Processor = processor;
-                }
-                else
-                {
-                    throw new Exception("Processor argument cannot be null.");
-                }
 
                 FocusInterval = new TimeSpan(0, 0, 0, 0, 2500);
             }
