@@ -10,8 +10,6 @@ namespace OpticalReaderLib
 
         public async Task<DecodeResult> DecodeAsync(Frame frame)
         {
-            _reader.Options.TryHarder = true;
-
             var result = await Task.Run<ZXing.Result>(() =>
             {
                 var width = 0;
