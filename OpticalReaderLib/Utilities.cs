@@ -11,11 +11,11 @@ namespace OpticalReaderLib
         /// <summary>
         /// Gets suggested camera parameters from the given information.
         /// </summary>
-        /// <param name="sensorResolution">Camera sensor resolution in pixels</param>
-        /// <param name="sensorRotation">Camera sensor orientation to the screen</param>
-        /// <param name="objectSize">Real-life object size in millimeters</param>
-        /// <param name="length">Preferred object width or height in pixels</param>
-        /// <returns>Suggested camera parameters</returns>
+        /// <param name="sensorResolution">Camera sensor resolution in pixels.</param>
+        /// <param name="sensorRotation">Camera sensor orientation to the screen.</param>
+        /// <param name="objectSize">Real-life object size in millimeters.</param>
+        /// <param name="length">Preferred object width or height in pixels.</param>
+        /// <returns>Suggested camera parameters.</returns>
         public static ParameterSuggestion GetSuggestedParameters(Windows.Foundation.Size sensorResolution, double sensorRotation, Windows.Foundation.Size objectSize, Windows.Foundation.Size objectResolution)
         {
             var deviceInformation = Internal.DeviceInformationCollector.GetInformation();
@@ -44,6 +44,12 @@ namespace OpticalReaderLib
             }
         }
 
+        /// <summary>
+        /// Renders a writeable bitmap preview of the given frame.
+        /// </summary>
+        /// <param name="frame">Frame to render.</param>
+        /// <param name="size">Preview size in pixels.</param>
+        /// <returns>Rendered frame preview.</returns>
         public static async Task<WriteableBitmap> RenderPreviewAsync(Frame frame, Windows.Foundation.Size size)
         {
             using (var bitmap = new Bitmap(frame.Dimensions, Internal.Utilities.FrameFormatToColorMode(frame.Format), frame.Pitch, frame.Buffer.AsBuffer()))

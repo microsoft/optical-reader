@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace OpticalReaderLib
 {
+    /// <summary>
+    /// Basic generic normalizer implementation.
+    /// </summary>
     public class BasicNormalizer : INormalizer
     {
         public async Task<NormalizeResult> NormalizeAsync(Frame frame, Windows.Foundation.Rect area, double rotation)

@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace OpticalReaderLib
 {
+    /// <summary>
+    /// Decoder implementation that utilizes the ZXing library.
+    /// </summary>
     public class ZxingDecoder : IDecoder
     {
         private ZXing.BarcodeReader _reader = new ZXing.BarcodeReader();

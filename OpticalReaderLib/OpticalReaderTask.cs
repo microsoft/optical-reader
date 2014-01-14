@@ -6,12 +6,30 @@ using System.Windows.Media.Imaging;
 
 namespace OpticalReaderLib
 {
+    /// <summary>
+    /// Optical reader task result event arguments.
+    /// </summary>
     public class OpticalReaderResult : TaskEventArgs
     {
-        public string Text { get; internal set; }
-        public byte[] Data { get; internal set; }
-        public string Format { get; internal set; }
-        public WriteableBitmap Thumbnail { get; internal set; }
+        /// <summary>
+        /// Textual representation of the result content.
+        /// </summary>
+        public string Text { get; set; }
+
+        /// <summary>
+        /// Raw result data.
+        /// </summary>
+        public byte[] Data { get; set; }
+
+        /// <summary>
+        /// Raw result data type.
+        /// </summary>
+        public string Format { get; set; }
+
+        /// <summary>
+        /// Thumbnail preview of the detected optical code.
+        /// </summary>
+        public WriteableBitmap Thumbnail { get; set; }
 
         public OpticalReaderResult(TaskResult taskResult)
             : base(taskResult)
@@ -32,11 +50,20 @@ namespace OpticalReaderLib
         }
     }
 
+    /// <summary>
+    /// Optical reader task is a Windows Phone chooser task implementation that allows
+    /// easy and quick integration of 1D and 2D optical code reading functionality.
+    /// </summary>
     public class OpticalReaderTask : Microsoft.Phone.Tasks.ChooserBase<OpticalReaderResult>, IDisposable
     {
         private static OpticalReaderTask _instance = null;
         private IProcessor _processor = null;
 
+        /// <summary>
+        /// Processor to use for processing the frames.
+        /// 
+        /// Zxing processor is used if no processor is set explicitly.
+        /// </summary>
         public IProcessor Processor
         {
             get
@@ -55,12 +82,40 @@ namespace OpticalReaderLib
             }
         }
 
+        /// <summary>
+        /// Target object real-life millimeter size. This affects the zoom factor
+        /// used in the reader viewfinder.
+        /// 
+        /// Default is no zoom.
+        /// </summary>
         public Windows.Foundation.Size ObjectSize { get; set; }
 
+        /// <summary>
+        /// Reader camera focus interval, meaning the time that needs to pass without
+        /// the reader finding anything before it attempts to re-focus the lense.
+        /// 
+        /// Default is 2500 milliseconds.
+        /// </summary>
         public TimeSpan FocusInterval { get; set; }
 
+        /// <summary>
+        /// Set to true to see debug frames in the reader viewfinder. Default is false,
+        /// meaning that debug frames are not displayed.
+        /// 
+        /// Debug frames are meant to be used while developing normalizers,
+        /// enhancers and processor, in order to get visual feedback on how the frame
+        /// is modified during processing.
+        /// 
+        /// Debug frames are not meant to be displayed in final consumer applications.
+        /// </summary>
         public bool ShowDebugInformation { get; set; }
 
+        /// <summary>
+        /// Set to true to require the user to confirm a found result by tapping on a
+        /// result preview. If false, the first result found will be used automatically.
+        /// 
+        /// Default is false.
+        /// </summary>
         public bool RequireConfirmation { get; set; }
 
         public OpticalReaderTask()
@@ -77,6 +132,13 @@ namespace OpticalReaderLib
             }
         }
 
+        /// <summary>
+        /// Show the optical reader viewfinder.
+        /// 
+        /// Application is navigated to a optical reader viewfinder page and the Completed
+        /// event is fired when user either navigates away from the viewfinder or if an
+        /// optical code is detected.
+        /// </summary>
         public override void Show()
         {
             var applicationFrame = (PhoneApplicationFrame)Application.Current.RootVisual;

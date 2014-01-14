@@ -3,16 +3,45 @@ using System.Threading.Tasks;
 
 namespace OpticalReaderLib
 {
+    /// <summary>
+    /// Decoding result.
+    /// </summary>
     public class DecodeResult
     {
-        public string Text = null;
-        public byte[] Data = null;
-        public string Format = null;
-        public List<Windows.Foundation.Point> InterestPoints = null;
+        /// <summary>
+        /// Textual representation of the result content.
+        /// </summary>
+        public string Text { get; set; }
+
+        /// <summary>
+        /// Raw result data.
+        /// </summary>
+        public byte[] Data { get; set; }
+
+        /// <summary>
+        /// Raw result data type.
+        /// </summary>
+        public string Format { get; set; }
+
+        /// <summary>
+        /// Interest points in the decoded frame.
+        /// </summary>
+        public List<Windows.Foundation.Point> InterestPoints { get; set; }
     }
 
+    /// <summary>
+    /// Frame decoder implementation interface.
+    /// 
+    /// Decoders attempt to find optically encoded information (for example 1D and
+    /// 2D barcodes, QR codes, data matrices) from frames.
+    /// </summary>
     public interface IDecoder
     {
+        /// <summary>
+        /// Attempts to decode an optically encoded code from the frame.
+        /// </summary>
+        /// <param name="frame">Frame to decode.</param>
+        /// <returns>Decoding result or null if no code was found.</returns>
         Task<DecodeResult> DecodeAsync(Frame frame);
     }
 }

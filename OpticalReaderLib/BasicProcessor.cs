@@ -7,6 +7,9 @@ using System.Windows.Media.Imaging;
 
 namespace OpticalReaderLib
 {
+    /// <summary>
+    /// Basic generic abstract processor implementation. Requires a decoder.
+    /// </summary>
     public abstract class BasicProcessor : IProcessor
     {
         public INormalizer Normalizer { get; set; }

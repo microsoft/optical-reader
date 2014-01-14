@@ -1,28 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OpticalReaderLib
 {
+    /// <summary>
+    /// Processing result.
+    /// </summary>
     public class ProcessResult
     {
-        public string Text = null;
-        public byte[] Data = null;
-        public string Format = null;
-        public List<Windows.Foundation.Point> InterestPoints = null;
+        /// <summary>
+        /// Textual representation of the result content.
+        /// </summary>
+        public string Text { get; set; }
+
+        /// <summary>
+        /// Raw result data.
+        /// </summary>
+        public byte[] Data { get; set; }
+
+        /// <summary>
+        /// Raw result data type.
+        /// </summary>
+        public string Format { get; set; }
+
+        /// <summary>
+        /// Interest points in the original frame.
+        /// </summary>
+        public List<Windows.Foundation.Point> InterestPoints { get; set; }
     }
 
+    /// <summary>
+    /// Frame processor implementation interface.
+    /// 
+    /// Processors are all-in-one frame decoding systems. Depending on the implementation,
+    /// they may use normalizers, enhancers and decoders to help in the job.
+    /// </summary>
     public interface IProcessor
     {
+        /// <summary>
+        /// Fired when there is a debugging frame available.
+        /// 
+        /// Debug frames are meant to be used while developing normalizers,
+        /// enhancers and processor, in order to get visual feedback on how the frame
+        /// is modified during processing.
+        /// 
+        /// Debug frames are not meant to be displayed in final consumer applications.
+        /// </summary>
         event EventHandler<DebugFrameEventArgs> DebugFrameAvailable;
 
+        /// <summary>
+        /// Attempts to decode an optically encoded code from the frame by processing it.
+        /// </summary>
+        /// <param name="frame">Frame to process.</param>
+        /// <returns>Processing result or null if no code was found.</returns>
         Task<ProcessResult> ProcessAsync(Frame frame, Windows.Foundation.Rect area, double rotation);
     }
 
+    /// <summary>
+    /// Debug frame available event arguments.
+    /// </summary>
     public class DebugFrameEventArgs : EventArgs 
     {
-        public Frame DebugFrame = null;
+        /// <summary>
+        /// Debug frame.
+        /// </summary>
+        public Frame DebugFrame { get; set; }
     }
 }
