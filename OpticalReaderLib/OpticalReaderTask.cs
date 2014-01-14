@@ -44,6 +44,8 @@ namespace OpticalReaderLib
 
         public bool ShowDebugInformation { get; set; }
 
+        public bool RequireConfirmation { get; set; }
+
         public OpticalReaderTask(IProcessor processor)
         {
             if (_instance == null)

@@ -69,6 +69,7 @@ namespace OpticalReaderApp
             var useCustomProcessor = ProcessorCheckBox.IsChecked != null && (bool)ProcessorCheckBox.IsChecked;
             var focusInterval = new TimeSpan(0, 0, 0, 0, 2500);
             var objectSize = _size <= 10 ? new Windows.Foundation.Size(_size * 10, _size * 10) : new Windows.Foundation.Size(0, 0);
+            var requireConfirmation = ConfirmationCheckBox.IsChecked != null && (bool)ConfirmationCheckBox.IsChecked;
 
             if (useCustomProcessor)
             {
@@ -85,7 +86,8 @@ namespace OpticalReaderApp
             {
                 ShowDebugInformation = showDebugInformation,
                 FocusInterval = focusInterval,
-                ObjectSize = objectSize
+                ObjectSize = objectSize,
+                RequireConfirmation = requireConfirmation
             };
 
             _task.Completed += OpticalReaderTask_Completed;

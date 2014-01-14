@@ -51,6 +51,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Grid>
@@ -59,9 +60,9 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <CheckBox x:Name="DebugCheckBox"/>
-                    <TextBlock x:Name="DebugTextBlock" Grid.Column="1" VerticalAlignment="Center" Margin="0"
-                               Text="Show debug information"/>
+                    <CheckBox x:Name="ConfirmationCheckBox" Margin="0,-10,-12,-12"/>
+                    <TextBlock x:Name="ConfirmationTextBlock" Grid.Column="1" VerticalAlignment="Center" Margin="0"
+                               Text="Require user confirmation"/>
                 </Grid>
 
                 <Grid Grid.Row="1">
@@ -70,12 +71,23 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <CheckBox x:Name="ProcessorCheckBox"/>
+                    <CheckBox x:Name="DebugCheckBox" Margin="0,-10,-12,-12"/>
+                    <TextBlock x:Name="DebugTextBlock" Grid.Column="1" VerticalAlignment="Center" Margin="0"
+                               Text="Show debug information"/>
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox x:Name="ProcessorCheckBox" Margin="0,-10,-12,-12"/>
                     <TextBlock x:Name="ProcessorTextBlock" Grid.Column="1" VerticalAlignment="Center" Margin="0"
                                Text="Use custom enhancer (contrast looper)"/>
                 </Grid>
 
-                <Grid Grid.Row="2">
+                <Grid Grid.Row="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="Auto"/>

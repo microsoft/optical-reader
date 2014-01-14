@@ -319,7 +319,15 @@ namespace OpticalReaderLib
 
                                 ResultTextBlock.Text = _resultTuple.Item1.Text;
                                 ResultImage.Source = _resultTuple.Item2;
-                                ResultGrid.Visibility = System.Windows.Visibility.Visible;
+
+                                if (OpticalReaderTask.Instance.RequireConfirmation)
+                                {
+                                    ResultGrid.Visibility = System.Windows.Visibility.Visible;
+                                }
+                                else
+                                {
+                                    NavigationService.GoBack();
+                                }
                             }
 
                             _device.PreviewFrameAvailable += PhotoCaptureDevice_PreviewFrameAvailable;
