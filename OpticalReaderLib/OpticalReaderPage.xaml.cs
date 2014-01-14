@@ -102,6 +102,8 @@ namespace OpticalReaderLib
                 }
             }
 
+            _active = false;
+
             base.OnNavigatingFrom(e);
         }
 
@@ -157,7 +159,6 @@ namespace OpticalReaderLib
 
         protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
         {
-            _active = false;
             _resultTuple = null;
             
             base.OnBackKeyPress(e);
