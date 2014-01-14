@@ -35,6 +35,8 @@ namespace OpticalReaderLib
         /// Normalizes the frame, cropping it to the requested area and rotating the result.
         /// </summary>
         /// <param name="frame">Frame to normalize.</param>
+        /// <param name="area">Frame area to crop to.</param>
+        /// <param name="rotation">Degrees to clockwise rotate the selected area.</param>
         /// <returns>Normalization result.</returns>
         Task<NormalizeResult> NormalizeAsync(Frame frame, Windows.Foundation.Rect area, double rotation);
     }

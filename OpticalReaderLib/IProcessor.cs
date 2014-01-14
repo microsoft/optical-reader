@@ -53,6 +53,8 @@ namespace OpticalReaderLib
         /// Attempts to decode an optically encoded code from the frame by processing it.
         /// </summary>
         /// <param name="frame">Frame to process.</param>
+        /// <param name="area">Interesting frame area.</param>
+        /// <param name="rotation">Frame rotation, how many degrees it should be rotated clockwise.</param>
         /// <returns>Processing result or null if no code was found.</returns>
         Task<ProcessResult> ProcessAsync(Frame frame, Windows.Foundation.Rect area, double rotation);
     }
