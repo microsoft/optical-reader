@@ -41,9 +41,9 @@
             </StackPanel>
 
             <StackPanel x:Name="ResultStackPanel" Visibility="Collapsed">
-                <Image x:Name="ThumbnailImage"/>
-                <TextBlock x:Name="TypeTextBlock" TextWrapping="Wrap" Margin="12"/>
-                <TextBlock x:Name="DescriptionTextBlock" TextWrapping="Wrap" Margin="12"/>
+                <Image x:Name="ThumbnailImage" Width="240" Height="240"/>
+                <TextBlock x:Name="TypeTextBlock" TextWrapping="Wrap" Margin="12" TextAlignment="Center"/>
+                <TextBlock x:Name="DescriptionTextBlock" TextWrapping="Wrap" Margin="12" TextAlignment="Center"/>
             </StackPanel>
 
             <Grid Grid.Row="1">
