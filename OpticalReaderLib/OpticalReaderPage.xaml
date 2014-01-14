@@ -45,7 +45,7 @@
 
             <Border x:Name="ReaderBorder" Grid.Row="1" Grid.Column="1"
                     Width="440" Height="440" BorderThickness="2"
-                    BorderBrush="White">
+                    BorderBrush="White" Visibility="Collapsed">
             </Border>
 
             <Grid x:Name="DebugGrid" Grid.Column="1" VerticalAlignment="Bottom"

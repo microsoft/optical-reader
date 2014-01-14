@@ -71,6 +71,8 @@ namespace OpticalReaderLib
                     DebugGrid.Visibility = System.Windows.Visibility.Visible;
                 }
 
+                ReaderBorder.Visibility = System.Windows.Visibility.Visible;
+
                 _active = true;
             }
             else
@@ -101,6 +103,8 @@ namespace OpticalReaderLib
                     ProgressBar.Visibility = System.Windows.Visibility.Visible;
                 }
             }
+
+            ReaderBorder.Visibility = System.Windows.Visibility.Collapsed;
 
             _active = false;
 
