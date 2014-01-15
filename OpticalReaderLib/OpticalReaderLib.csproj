@@ -83,6 +83,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>Bin\ARM\Release\OpticalReaderLib.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BasicEnhancer.cs" />
