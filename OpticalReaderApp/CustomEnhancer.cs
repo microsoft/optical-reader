@@ -1,7 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace OpticalReaderApp
 {
+    /// <summary>
+    /// Dumb little custom enhancer that turns all frame pixels to either white or black
+    /// depending on wether the grayscale value of the pixel exceeds a threshold or not,
+    /// rotating the threshold for adjacent frames.
+    /// </summary>
     class CustomEnhancer : OpticalReaderLib.IEnhancer
     {
         private uint _threshold = 0;
@@ -11,27 +17,34 @@ namespace OpticalReaderApp
 
         public async Task<OpticalReaderLib.EnhanceResult> EnhanceAsync(OpticalReaderLib.Frame frame)
         {
-            _threshold = _threshold + _jump;
-
-            if (_threshold > _max)
+            if (frame.Format == OpticalReaderLib.FrameFormat.Gray8)
             {
-                _threshold = _min;
-            }
+                _threshold = _threshold + _jump;
 
-            var f = await Task.Run<OpticalReaderLib.Frame>(() =>
-            {
-                for (int i = 0; i < frame.Buffer.Length; i++)
+                if (_threshold > _max)
                 {
-                    frame.Buffer[i] = (byte)(frame.Buffer[i] < _threshold ? 0x00 : 0xff);
+                    _threshold = _min;
                 }
 
-                return frame;
-            });
+                var f = await Task.Run<OpticalReaderLib.Frame>(() =>
+                {
+                    for (int i = 0; i < frame.Buffer.Length; i++)
+                    {
+                        frame.Buffer[i] = (byte)(frame.Buffer[i] < _threshold ? 0x00 : 0xff);
+                    }
 
-            return new OpticalReaderLib.EnhanceResult()
+                    return frame;
+                });
+
+                return new OpticalReaderLib.EnhanceResult()
+                {
+                    Frame = f
+                };
+            }
+            else
             {
-                Frame = f
-            };
+                throw new Exception("Dumb little custom enhancer only supports Gray8 encoded frames");
+            }
         }
     }
 }
