@@ -9,7 +9,7 @@ using System.Windows.Navigation;
 using System.Windows.Threading;
 using Windows.Phone.Media.Capture;
 
-namespace OpticalReaderLib
+namespace OpticalReaderLib.Internal
 {
     public partial class OpticalReaderPage : PhoneApplicationPage
     {
@@ -71,12 +71,14 @@ namespace OpticalReaderLib
                     DebugGrid.Visibility = System.Windows.Visibility.Visible;
                 }
 
-                ReaderBorder.Opacity = 1;
+                ReaderBorder.Visibility = System.Windows.Visibility.Visible;
 
                 _active = true;
             }
             else
             {
+                ReaderBorder.Visibility = System.Windows.Visibility.Collapsed;
+
                 NavigationService.GoBack();
             }
         }
@@ -103,8 +105,6 @@ namespace OpticalReaderLib
                     ProgressBar.Visibility = System.Windows.Visibility.Visible;
                 }
             }
-
-            ReaderBorder.Opacity = 0;
 
             _active = false;
 

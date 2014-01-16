@@ -1,5 +1,5 @@
 ﻿<phone:PhoneApplicationPage
-    x:Class="OpticalReaderLib.OpticalReaderPage"
+    x:Class="OpticalReaderLib.Internal.OpticalReaderPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
@@ -45,7 +45,7 @@
 
             <Border x:Name="ReaderBorder" Grid.Row="1" Grid.Column="1"
                     Width="440" Height="440" BorderThickness="2"
-                    BorderBrush="White" Opacity="0">
+                    BorderBrush="White">
             </Border>
 
             <Grid x:Name="DebugGrid" Grid.Column="1" VerticalAlignment="Bottom"

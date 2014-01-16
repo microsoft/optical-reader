@@ -93,7 +93,7 @@
     <Compile Include="Frame.cs" />
     <Compile Include="IDecoder.cs" />
     <Compile Include="IEnhancer.cs" />
-    <Compile Include="OpticalReaderPage.xaml.cs">
+    <Compile Include="Internal\OpticalReaderPage.xaml.cs">
       <DependentUpon>OpticalReaderPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="OpticalReaderTask.cs" />
@@ -120,7 +120,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="OpticalReaderPage.xaml">
+    <Page Include="Internal\OpticalReaderPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -143,7 +143,7 @@ namespace OpticalReaderLib
         {
             var applicationFrame = (PhoneApplicationFrame)Application.Current.RootVisual;
 
-            applicationFrame.Navigate(new Uri("/OpticalReaderLib;component/OpticalReaderPage.xaml", UriKind.Relative));
+            applicationFrame.Navigate(new Uri("/OpticalReaderLib;component/Internal/OpticalReaderPage.xaml", UriKind.Relative));
         }
 
         public void Dispose()
