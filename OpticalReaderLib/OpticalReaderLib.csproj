@@ -109,6 +109,7 @@
     <Compile Include="Internal\Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Help\OpticalReaderLib.0.1.0.0.chm" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
