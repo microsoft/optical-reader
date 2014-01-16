@@ -183,8 +183,18 @@ namespace OpticalReaderLib.Internal
             var captureResolutions = PhotoCaptureDevice.GetAvailableCaptureResolutions(CameraSensorLocation.Back).ToArray();
             var previewResolutions = PhotoCaptureDevice.GetAvailablePreviewResolutions(CameraSensorLocation.Back).ToArray();
 
-            var captureResolution = GetFirstWideResolution(captureResolutions);
-            var previewResolution = GetFirstWideResolution(previewResolutions);
+            Windows.Foundation.Size captureResolution = new Windows.Foundation.Size(640, 480);
+            Windows.Foundation.Size previewResolution = new Windows.Foundation.Size(640, 480);
+
+            try
+            {
+                captureResolution = GetFirstWideResolution(captureResolutions);
+                previewResolution = GetFirstWideResolution(previewResolutions);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Unable to get wide resolution for viewfinder, using 640x480");
+            }
 
             var task = PhotoCaptureDevice.OpenAsync(CameraSensorLocation.Back, captureResolution).AsTask();
 
