@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{2097222f-a34e-4bb8-95bb-2e88961e55d5}" Title="Optical Reader" RuntimeType="Silverlight" Version="0.0.0.0" Genre="apps.normal" Author="" Description="" Publisher="" PublisherID="{fa473f9a-8d18-4f0b-ac96-f4dc088a3953}">
+  <App xmlns="" ProductID="{2097222f-a34e-4bb8-95bb-2e88961e55d5}" Title="Optical Reader" RuntimeType="Silverlight" Version="0.0.0.0" Genre="apps.normal" Author="Nokia Developer" Description="" Publisher="" PublisherID="{fa473f9a-8d18-4f0b-ac96-f4dc088a3953}">
     <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_ISV_CAMERA" />
