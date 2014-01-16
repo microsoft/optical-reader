@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>0.1.0.0</version>
+    <title>Optical Reader Library</title>
+    <authors>Nokia Developer</authors>
+    <owners>Nokia Developer</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Optical Reader Library provides a simple easy-to-integrate optical reader task for QR-code and barcode reading purposes, and also provides a customizable optical reader framework for assisting in implementing own optical reader systems.
+
+Optical Reader library uses Nokia Imaging SDK and ZXing.Net Windows Phone 8 Nuget libraries.</description>
+    <summary>Easy-to-integrate optical reader task for QR-code and barcode reading purposes.</summary>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2014</copyright>
+    <tags>qr, barcode, optical, reader</tags>
+  </metadata>
+  <files>
+    <file src="Help\*.chm" target="content\Help"/>
+  </files>
+</package>
